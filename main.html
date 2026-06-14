@@ -1,0 +1,2744 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>کارآونگ - سیستم حسابداری فروش</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+@font-face {
+  font-family: 'Vazir';
+  src: url('https://cdn.jsdelivr.net/gh/rastikerdar/vazir-font@v30.1.0/dist/Vazir-Regular.woff2') format('woff2');
+  font-weight: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Vazir';
+  src: url('https://cdn.jsdelivr.net/gh/rastikerdar/vazir-font@v30.1.0/dist/Vazir-Bold.woff2') format('woff2');
+  font-weight: bold;
+  font-display: swap;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+body {
+  font-family: 'iransansxfanum', 'Vazir', Tahoma, sans-serif;
+  background: #0a0e1a;
+  color: #e6e6e6;
+  direction: rtl;
+  font-size: 14px;
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+#bgCanvas {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: 0;
+  filter: blur(60px);
+  opacity: 0.5;
+}
+.app {
+  display: flex;
+  min-height: 100vh;
+  position: relative;
+  z-index: 1;
+}
+.sidebar {
+  width: 260px;
+  background: rgba(20, 25, 40, 0.7);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-left: 1px solid rgba(198, 169, 97, 0.25);
+  padding: 20px 0;
+  position: fixed;
+  right: 0;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  z-index: 100;
+}
+.logo {
+  padding: 0 20px 20px;
+  border-bottom: 1px solid rgba(198, 169, 97, 0.2);
+  margin-bottom: 15px;
+  text-align: center;
+}
+.logo img { 
+  max-width: 140px; 
+  height: auto; 
+  margin-bottom: 10px; 
+  filter: brightness(0) invert(1);
+}
+.logo h1 { font-size: 16px; color: #c6a961; font-weight: bold; }
+.logo p { font-size: 11px; color: #888; margin-top: 4px; }
+.menu-item {
+  padding: 13px 20px;
+  cursor: pointer;
+  color: #b0b0b0;
+  border-right: 3px solid transparent;
+  transition: all 0.25s;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+}
+.menu-item:hover { background: rgba(198, 169, 97, 0.1); color: #fff; }
+.menu-item.active {
+  background: linear-gradient(90deg, rgba(198,169,97,0.15), transparent);
+  color: #c6a961;
+  border-right-color: #c6a961;
+}
+.menu-icon { font-size: 16px; width: 22px; text-align: center; }
+.main {
+  margin-right: 260px;
+  flex: 1;
+  padding: 25px 30px;
+  width: calc(100% - 260px);
+  min-height: 100vh;
+}
+.page { display: none; animation: fadeIn 0.3s; }
+.page.active { display: block; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid rgba(198, 169, 97, 0.2);
+}
+.page-title { font-size: 22px; color: #fff; font-weight: bold; }
+.btn {
+  padding: 9px 18px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 13px;
+  transition: all 0.25s;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+.btn-primary {
+  background: linear-gradient(135deg, #c6a961, #d4ba72);
+  color: #1a1f2e;
+  font-weight: bold;
+  box-shadow: 0 4px 12px rgba(198, 169, 97, 0.3);
+}
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(198, 169, 97, 0.5); }
+.btn-secondary {
+  background: rgba(42, 49, 66, 0.6);
+  color: #e6e6e6;
+  border: 1px solid rgba(198, 169, 97, 0.3);
+  backdrop-filter: blur(10px);
+}
+.btn-secondary:hover { background: rgba(53, 61, 84, 0.8); }
+.btn-danger { background: rgba(192, 57, 43, 0.8); color: #fff; }
+.btn-danger:hover { background: rgba(217, 71, 53, 0.9); }
+.btn-success { background: rgba(39, 174, 96, 0.8); color: #fff; }
+.btn-success:hover { background: rgba(46, 204, 113, 0.9); }
+.btn-sm { padding: 5px 10px; font-size: 12px; }
+.card {
+  background: rgba(26, 31, 46, 0.6);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(198, 169, 97, 0.2);
+  border-radius: 12px;
+  padding: 22px;
+  margin-bottom: 20px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+}
+.card-title {
+  font-size: 15px;
+  color: #c6a961;
+  margin-bottom: 18px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(198, 169, 97, 0.2);
+  font-weight: bold;
+}
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 18px;
+  margin-bottom: 25px;
+}
+.stat-card {
+  background: rgba(26, 31, 46, 0.6);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(198, 169, 97, 0.2);
+  border-radius: 12px;
+  padding: 20px;
+  border-right: 4px solid #c6a961;
+  transition: all 0.3s;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+}
+.stat-card:hover { transform: translateY(-3px); box-shadow: 0 12px 40px rgba(0,0,0,0.3); }
+.stat-label { font-size: 12px; color: #999; margin-bottom: 8px; }
+.stat-value { font-size: 24px; color: #fff; font-weight: bold; }
+.stat-sub { font-size: 11px; color: #777; margin-top: 6px; }
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 15px;
+}
+.form-group { margin-bottom: 15px; }
+.form-group label {
+  display: block;
+  margin-bottom: 7px;
+  color: #c6a961;
+  font-size: 12px;
+  font-weight: 500;
+}
+.form-group input, .form-group select, .form-group textarea {
+  width: 100%;
+  padding: 10px 13px;
+  background: rgba(15, 20, 30, 0.6);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(198, 169, 97, 0.25);
+  border-radius: 8px;
+  color: #e6e6e6;
+  font-family: inherit;
+  font-size: 13px;
+  transition: all 0.2s;
+}
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+  outline: none;
+  border-color: #c6a961;
+  box-shadow: 0 0 0 3px rgba(198, 169, 97, 0.15);
+  background: rgba(15, 20, 30, 0.8);
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: rgba(26, 31, 46, 0.4);
+  border-radius: 10px;
+  overflow: hidden;
+}
+table th {
+  background: rgba(36, 42, 61, 0.8);
+  color: #c6a961;
+  padding: 13px 12px;
+  text-align: right;
+  font-size: 12px;
+  font-weight: bold;
+  border-bottom: 1px solid rgba(198, 169, 97, 0.2);
+}
+table td {
+  padding: 12px;
+  border-top: 1px solid rgba(198, 169, 97, 0.1);
+  font-size: 13px;
+}
+table tr:hover { background: rgba(198, 169, 97, 0.05); }
+.badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 14px;
+  font-size: 11px;
+  font-weight: bold;
+}
+.badge-paid { background: rgba(39, 174, 96, 0.2); color: #2ecc71; border: 1px solid rgba(46, 204, 113, 0.3); }
+.badge-unpaid { background: rgba(192, 57, 43, 0.2); color: #e74c3c; border: 1px solid rgba(231, 76, 60, 0.3); }
+.badge-partial { background: rgba(243, 156, 18, 0.2); color: #f39c12; border: 1px solid rgba(243, 156, 18, 0.3); }
+.badge-sent { background: rgba(52, 152, 219, 0.2); color: #3498db; border: 1px solid rgba(52, 152, 219, 0.3); }
+.badge-credit { background: rgba(155, 89, 182, 0.2); color: #9b59b6; border: 1px solid rgba(155, 89, 182, 0.3); }
+.badge-pending { background: rgba(243, 156, 18, 0.2); color: #f39c12; border: 1px solid rgba(243, 156, 18, 0.3); }
+.badge-cashed { background: rgba(39, 174, 96, 0.2); color: #2ecc71; border: 1px solid rgba(46, 204, 113, 0.3); }
+.badge-bounced { background: rgba(192, 57, 43, 0.2); color: #e74c3c; border: 1px solid rgba(231, 76, 60, 0.3); }
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.75);
+  backdrop-filter: blur(8px);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.modal.active { display: flex; animation: fadeIn 0.2s; }
+.modal-content {
+  background: rgba(26, 31, 46, 0.95);
+  backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(30px);
+  border: 1px solid rgba(198, 169, 97, 0.3);
+  border-radius: 14px;
+  padding: 28px;
+  max-width: 900px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+}
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 22px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(198, 169, 97, 0.2);
+}
+.modal-title { font-size: 18px; color: #c6a961; font-weight: bold; }
+.close-btn {
+  background: none;
+  border: none;
+  color: #888;
+  font-size: 26px;
+  cursor: pointer;
+  transition: color 0.2s;
+  line-height: 1;
+}
+.close-btn:hover { color: #fff; }
+.items-table input, .items-table select {
+  padding: 7px 9px;
+  background: rgba(15, 20, 30, 0.6);
+  border: 1px solid rgba(198, 169, 97, 0.25);
+  border-radius: 6px;
+  color: #e6e6e6;
+  font-family: inherit;
+  font-size: 12px;
+  width: 100%;
+}
+.items-table input:focus, .items-table select:focus {
+  outline: none;
+  border-color: #c6a961;
+}
+.toolbar {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.search-box {
+  padding: 10px 13px;
+  background: rgba(15, 20, 30, 0.6);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(198, 169, 97, 0.25);
+  border-radius: 8px;
+  color: #e6e6e6;
+  font-family: inherit;
+  width: 280px;
+  font-size: 13px;
+}
+.search-box:focus { outline: none; border-color: #c6a961; }
+.tab-bar {
+  display: flex;
+  gap: 5px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid rgba(198, 169, 97, 0.2);
+  flex-wrap: wrap;
+}
+.tab {
+  padding: 11px 20px;
+  cursor: pointer;
+  color: #888;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s;
+  font-size: 13px;
+  font-weight: 500;
+}
+.tab:hover { color: #fff; }
+.tab.active { color: #c6a961; border-bottom-color: #c6a961; }
+.tab-content { display: none; }
+.tab-content.active { display: block; animation: fadeIn 0.3s; }
+.empty-state {
+  text-align: center;
+  padding: 50px 20px;
+  color: #666;
+}
+.empty-state-icon { font-size: 52px; margin-bottom: 12px; opacity: 0.5; }
+.toast {
+  position: fixed;
+  bottom: 25px;
+  left: 25px;
+  background: rgba(39, 174, 96, 0.95);
+  backdrop-filter: blur(10px);
+  color: #fff;
+  padding: 13px 22px;
+  border-radius: 10px;
+  z-index: 2000;
+  display: none;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+  font-weight: bold;
+  border: 1px solid rgba(46, 204, 113, 0.4);
+}
+.toast.show { display: block; animation: slideIn 0.3s; }
+.toast.error { background: rgba(192, 57, 43, 0.95); border-color: rgba(231, 76, 60, 0.4); }
+@keyframes slideIn { from { transform: translateY(100px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+.invoice-totals {
+  background: rgba(15, 20, 30, 0.6);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(198, 169, 97, 0.25);
+  border-radius: 10px;
+  padding: 18px;
+  margin-top: 18px;
+}
+.total-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px dashed rgba(198, 169, 97, 0.15);
+  font-size: 13px;
+}
+.total-row:last-child {
+  border-bottom: none;
+  font-weight: bold;
+  color: #c6a961;
+  font-size: 17px;
+  padding-top: 14px;
+  margin-top: 6px;
+  border-top: 2px solid rgba(198, 169, 97, 0.3);
+}
+.chart-container {
+  background: rgba(26, 31, 46, 0.6);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(198, 169, 97, 0.2);
+  border-radius: 12px;
+  padding: 22px;
+  margin-bottom: 20px;
+}
+.chart-svg { width: 100%; height: 320px; }
+.chart-legend {
+  display: flex;
+  gap: 22px;
+  justify-content: center;
+  margin-top: 18px;
+  flex-wrap: wrap;
+}
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: #bbb;
+}
+.legend-color {
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+}
+.filter-box {
+  background: rgba(26, 31, 46, 0.6);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(198, 169, 97, 0.2);
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 20px;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: flex-end;
+}
+.filter-box label { font-size: 12px; color: #c6a961; display: block; margin-bottom: 5px; font-weight: 500; }
+.filter-box input, .filter-box select {
+  padding: 8px 11px;
+  background: rgba(15, 20, 30, 0.6);
+  border: 1px solid rgba(198, 169, 97, 0.25);
+  border-radius: 7px;
+  color: #e6e6e6;
+  font-family: inherit;
+  font-size: 12px;
+  min-width: 140px;
+}
+.filter-box input:focus, .filter-box select:focus { outline: none; border-color: #c6a961; }
+.invoice-preview {
+  background: #fff;
+  color: #000;
+  padding: 20mm;
+  width: 210mm;
+  min-height: 297mm;
+  margin: 0 auto;
+  font-family: 'Vazir', Tahoma;
+  direction: rtl;
+  font-size: 11pt;
+}
+.invoice-preview h2 { color: #002142; }
+.invoice-preview table { background: #fff; color: #000; }
+.invoice-preview table th { background: #002142; color: #fff; }
+.invoice-preview table td { color: #000; border-top: 1px solid #ddd; }
+
+/* بهینه‌سازی موبایل برای رسید فاکتور */
+@media (max-width: 768px) {
+  .invoice-preview {
+    width: 100%;
+    padding: 15px;
+    min-height: auto;
+    font-size: 10pt;
+  }
+  .invoice-preview table {
+    font-size: 9pt;
+  }
+  .invoice-preview table th,
+  .invoice-preview table td {
+    padding: 6px 4px;
+  }
+}
+
+@media print {
+  body * { visibility: hidden; }
+  #printArea, #printArea * { visibility: visible; }
+  #printArea {
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 210mm;
+    padding: 0;
+    margin: 0;
+  }
+  @page { size: A4; margin: 0; }
+}
+.bank-account-item {
+  background: rgba(15, 20, 30, 0.6);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(198, 169, 97, 0.25);
+  border-radius: 10px;
+  padding: 15px;
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+}
+.bank-account-info { flex: 1; }
+.bank-account-info strong { color: #c6a961; display: block; margin-bottom: 5px; }
+.bank-account-info span { font-size: 12px; color: #aaa; margin-left: 15px; }
+.party-type-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 10px;
+  font-size: 11px;
+  margin-right: 8px;
+}
+.type-customer { background: rgba(52, 152, 219, 0.2); color: #3498db; border: 1px solid rgba(52, 152, 219, 0.3); }
+.type-partner { background: rgba(155, 89, 182, 0.2); color: #9b59b6; border: 1px solid rgba(155, 89, 182, 0.3); }
+.type-supplier { background: rgba(243, 156, 18, 0.2); color: #f39c12; border: 1px solid rgba(243, 156, 18, 0.3); }
+
+/* بهینه‌سازی موبایل برای کل اپلیکیشن */
+@media (max-width: 768px) {
+  .sidebar {
+    width: 100%;
+    height: auto;
+    position: relative;
+    border-left: none;
+    border-bottom: 1px solid rgba(198, 169, 97, 0.25);
+  }
+  .main {
+    margin-right: 0;
+    width: 100%;
+    padding: 15px;
+  }
+  .app {
+    flex-direction: column;
+  }
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
+</head>
+<body>
+<canvas id="bgCanvas"></canvas>
+
+<div class="app">
+  <aside class="sidebar">
+    <div class="logo">
+      <img src="https://karavang.ir/wp-content/uploads/2025/10/Karavang-2025-Logo-WB.svg" alt="کارآونگ">
+      <h1>سامانه حسابداری فروش</h1>
+      <p>اکوسیستم کسب‌وکار همراه شماست</p>
+    </div>
+    <div class="menu-item active" data-page="dashboard" onclick="showPage('dashboard')"><span class="menu-icon">🏠</span> داشبورد</div>
+    <div class="menu-item" data-page="parties" onclick="showPage('parties')"><span class="menu-icon">👥</span> اشخاص طرف حساب</div>
+    <div class="menu-item" data-page="newInvoice" onclick="showPage('newInvoice')"><span class="menu-icon">➕</span> صدور فاکتور</div>
+    <div class="menu-item" data-page="invoices" onclick="showPage('invoices')"><span class="menu-icon">📄</span> فاکتورهای فروش</div>
+    <div class="menu-item" data-page="purchases" onclick="showPage('purchases')"><span class="menu-icon">🛒</span> فاکتورهای خرید</div>
+    <div class="menu-item" data-page="expenses" onclick="showPage('expenses')"><span class="menu-icon">💰</span> اسناد هزینه</div>
+    <div class="menu-item" data-page="payments" onclick="showPage('payments')"><span class="menu-icon">💳</span> پرداخت‌ها و چک‌ها</div>
+    <div class="menu-item" data-page="reports" onclick="showPage('reports')"><span class="menu-icon">📈</span> گزارشات</div>
+    <div class="menu-item" data-page="settings" onclick="showPage('settings')"><span class="menu-icon">⚙️</span> تنظیمات</div>
+  </aside>
+
+  <main class="main">
+    <div id="dashboard" class="page active">
+      <div class="page-header">
+        <h2 class="page-title">داشبورد</h2>
+        <div id="todayDate" style="color:#c6a961;font-size:13px;font-weight:500;"></div>
+      </div>
+      <div class="stats-grid" id="dashboardStats"></div>
+      <div class="card">
+        <div class="card-title">آخرین فاکتورها</div>
+        <div id="recentInvoices"></div>
+      </div>
+    </div>
+
+    <div id="parties" class="page">
+      <div class="page-header">
+        <h2 class="page-title">👥 طرف‌های حساب</h2>
+        <button class="btn btn-primary" onclick="openPartyModal()">+ طرف حساب جدید</button>
+      </div>
+      <div class="tab-bar">
+        <div class="tab active" data-tab="customers" onclick="showPartyTab('customers')">مشتریان </div>
+        <div class="tab" data-tab="partners" onclick="showPartyTab('partners')">همکاران</div>
+        <div class="tab" data-tab="suppliers" onclick="showPartyTab('suppliers')">تأمین‌کنندگان </div>
+      </div>
+      <div class="toolbar">
+        <input type="text" class="search-box" id="partySearch" placeholder="جستجو در نام، تماس، شناسه..." oninput="renderParties()">
+      </div>
+      <div id="customersTab" class="tab-content active"></div>
+      <div id="partnersTab" class="tab-content"></div>
+      <div id="suppliersTab" class="tab-content"></div>
+    </div>
+
+    <div id="newInvoice" class="page">
+      <div class="page-header">
+        <h2 class="page-title" id="invoiceFormTitle">➕ صدور فاکتور فروش جدید</h2>
+      </div>
+      <div class="card">
+        <div class="card-title">اطلاعات پایه فاکتور</div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>خریدار *</label>
+            <select id="invCustomer" onchange="loadCustomerBalance()">
+              <option value="">انتخاب خریدار...</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>همکار / کارشناس فروش</label>
+            <select id="invPartner">
+              <option value="">انتخاب همکار...</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>تأمین‌کننده (برای فاکتور خرید)</label>
+            <select id="invSupplier">
+              <option value="">انتخاب تأمین‌کننده...</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>تاریخ</label>
+            <input type="text" id="invDate" readonly>
+          </div>
+          <div class="form-group">
+            <label>شماره فاکتور (خودکار)</label>
+            <input type="text" id="invNumber" readonly>
+          </div>
+          <div class="form-group">
+            <label>مانده حساب خریدار (تخمینی)</label>
+            <input type="text" id="invBalance" readonly style="color:#f39c12;">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>یادداشت</label>
+          <textarea id="invNote" rows="2"></textarea>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">اقلام فاکتور</div>
+        <table class="items-table">
+          <thead>
+            <tr>
+              <th style="width:40px;">ردیف</th>
+              <th>نام کالا/خدمات</th>
+              <th style="width:70px;">تعداد</th>
+              <th style="width:80px;">واحد</th>
+              <th style="width:130px;">فی فروش</th>
+              <th style="width:130px;">فی خرید</th>
+              <th style="width:130px;">جمع فروش</th>
+              <th style="width:40px;"></th>
+            </tr>
+          </thead>
+          <tbody id="invItems"></tbody>
+        </table>
+        <button class="btn btn-secondary" style="margin-top:12px;" onclick="addInvoiceItem()">+ افزودن ردیف</button>
+        
+        <div class="invoice-totals">
+          <div class="total-row"><span>جمع سطرها:</span><span id="invSubtotal">0</span></div>
+          <div class="form-grid" style="margin-top:12px;gap:12px;">
+            <div class="form-group" style="margin-bottom:0;">
+              <label>تخفیف (درصد)</label>
+              <input type="text" id="invDiscountPercent" value="0" oninput="handleMoneyInput(this); calculateInvoiceTotals()">
+            </div>
+            <div class="form-group" style="margin-bottom:0;">
+              <label>تخفیف (مبلغ)</label>
+              <input type="text" id="invDiscountAmount" value="0" oninput="handleMoneyInput(this); calculateInvoiceTotals()">
+            </div>
+            <div class="form-group" style="margin-bottom:0;">
+              <label>ارزش افزوده (10%)</label>
+              <select id="invVat" onchange="calculateInvoiceTotals()">
+                <option value="0">ندارد</option>
+                <option value="1">دارد (10%)</option>
+              </select>
+            </div>
+          </div>
+          <div class="total-row"><span>تخفیف:</span><span id="invDiscount">0</span></div>
+          <div class="total-row"><span>ارزش افزوده:</span><span id="invVatAmount">0</span></div>
+          <div class="total-row"><span>مبلغ خالص قابل پرداخت:</span><span id="invTotal">0</span></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">پرداخت‌ها</div>
+        <div id="invPayments"></div>
+        <div style="display:flex;gap:10px;margin-top:12px;flex-wrap:wrap;">
+          <button class="btn btn-secondary" onclick="addPayment('cash')">+ پرداخت نقدی/انتقال/کارت</button>
+          <button class="btn btn-secondary" onclick="addPayment('check')">+ ثبت چک</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">انتخاب حساب بانکی برای چاپ در فاکتور</div>
+        <div class="form-group">
+          <select id="invBankAccount">
+            <option value="">انتخاب حساب بانکی...</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;">
+        <button class="btn btn-secondary" onclick="resetInvoiceForm()">پاک کردن فرم</button>
+        <button class="btn btn-primary" onclick="saveInvoice()">💾 ذخیره فاکتور فروش</button>
+      </div>
+    </div>
+
+    <div id="invoices" class="page">
+      <div class="page-header">
+        <h2 class="page-title">📄 فاکتورهای فروش</h2>
+      </div>
+      <div class="toolbar">
+        <input type="text" class="search-box" id="invoiceSearch" placeholder="جستجو..." oninput="renderInvoices()">
+        <select id="invoiceStatusFilter" onchange="renderInvoices()" style="padding:10px;background:rgba(15,20,30,0.6);border:1px solid rgba(198,169,97,0.25);border-radius:8px;color:#e6e6e6;font-family:inherit;">
+          <option value="">همه وضعیت‌ها</option>
+          <option value="sent">ارسال شده</option>
+          <option value="paid">تسویه شده</option>
+          <option value="credit">نسیه (اعتباری)</option>
+          <option value="partial">قسمتی پرداخت شده</option>
+          <option value="unpaid">پرداخت نشده</option>
+        </select>
+      </div>
+      <div id="invoicesList"></div>
+    </div>
+
+    <div id="purchases" class="page">
+      <div class="page-header">
+        <h2 class="page-title">🛒 فاکتورهای خرید</h2>
+      </div>
+      <div class="toolbar">
+        <input type="text" class="search-box" id="purchaseSearch" placeholder="جستجو..." oninput="renderPurchases()">
+      </div>
+      <div id="purchasesList"></div>
+    </div>
+
+    <div id="expenses" class="page">
+      <div class="page-header">
+        <h2 class="page-title">💰 اسناد هزینه</h2>
+      </div>
+      <div id="expensesList"></div>
+    </div>
+
+    <div id="payments" class="page">
+      <div class="page-header">
+        <h2 class="page-title">💳 پرداخت‌ها و چک‌ها</h2>
+      </div>
+      <div class="tab-bar">
+        <div class="tab active" data-tab="received" onclick="showPaymentTab('received')">دریافتی‌ها</div>
+        <div class="tab" data-tab="paid" onclick="showPaymentTab('paid')">پرداختی‌ها</div>
+        <div class="tab" data-tab="checks" onclick="showPaymentTab('checks')">چک‌ها</div>
+      </div>
+      <div id="receivedTab" class="tab-content active"></div>
+      <div id="paidTab" class="tab-content"></div>
+      <div id="checksTab" class="tab-content"></div>
+    </div>
+
+    <div id="reports" class="page">
+      <div class="page-header">
+        <h2 class="page-title"> گزارشات</h2>
+      </div>
+      <div class="filter-box">
+        <div>
+          <label>از تاریخ:</label>
+          <input type="text" id="reportFromDate" placeholder="1405/01/01">
+        </div>
+        <div>
+          <label>تا تاریخ:</label>
+          <input type="text" id="reportToDate" placeholder="1405/12/29">
+        </div>
+        <div>
+          <label>خریدار:</label>
+          <select id="reportCustomer">
+            <option value="">همه</option>
+          </select>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="applyReportFilter()">اعمال فیلتر</button>
+        <button class="btn btn-secondary btn-sm" onclick="resetReportFilter()">پاک کردن فیلتر</button>
+      </div>
+      <div class="chart-container">
+        <div class="card-title">نمودار فروش، هزینه و سود</div>
+        <svg id="salesChart" class="chart-svg" viewBox="0 0 800 320" preserveAspectRatio="xMidYMid meet"></svg>
+        <div class="chart-legend">
+          <div class="legend-item"><div class="legend-color" style="background:#c6a961;"></div>فروش</div>
+          <div class="legend-item"><div class="legend-color" style="background:#27ae60;"></div>سود</div>
+          <div class="legend-item"><div class="legend-color" style="background:#e74c3c;"></div>هزینه</div>
+        </div>
+      </div>
+      <div class="stats-grid" id="reportStats"></div>
+      <div class="card">
+        <div class="card-title">جزئیات فاکتورها</div>
+        <div id="reportDetails"></div>
+      </div>
+    </div>
+
+    <div id="settings" class="page">
+      <div class="page-header">
+        <h2 class="page-title">⚙️ تنظیمات</h2>
+      </div>
+      <div class="tab-bar">
+        <div class="tab active" data-tab="company" onclick="showSettingsTab('company')">اطلاعات شرکت</div>
+        <div class="tab" data-tab="bank" onclick="showSettingsTab('bank')">حساب‌های بانکی</div>
+        <div class="tab" data-tab="backup" onclick="showSettingsTab('backup')">پشتیبان‌گیری</div>
+      </div>
+      <div id="settingsCompany" class="tab-content active">
+        <div class="card">
+          <div class="card-title">اطلاعات شرکت</div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>نام شرکت</label>
+              <input type="text" id="setCompanyName">
+            </div>
+            <div class="form-group">
+              <label>شماره تماس</label>
+              <input type="text" id="setPhone">
+            </div>
+            <div class="form-group" style="grid-column:1/-1;">
+              <label>آدرس</label>
+              <textarea id="setAddress" rows="2"></textarea>
+            </div>
+          </div>
+          <button class="btn btn-primary" onclick="saveSettings()">💾 ذخیره تنظیمات</button>
+        </div>
+      </div>
+      <div id="settingsBank" class="tab-content">
+        <div class="card">
+          <div class="card-title">حساب‌های بانکی</div>
+          <div id="bankAccountsList"></div>
+          <button class="btn btn-primary" style="margin-top:15px;" onclick="openBankModal()">+ افزودن حساب بانکی</button>
+        </div>
+      </div>
+      <div id="settingsBackup" class="tab-content">
+        <div class="card">
+          <div class="card-title">پشتیبان‌گیری و بازیابی</div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;">
+            <button class="btn btn-success" onclick="exportData()">📥 خروجی JSON (دانلود)</button>
+            <button class="btn btn-secondary" onclick="document.getElementById('importFile').click()">📤 ورود JSON (بازیابی)</button>
+            <input type="file" id="importFile" accept=".json" style="display:none;" onchange="importData(event)">
+            <button class="btn btn-danger" onclick="clearAllData()">🗑️ پاک کردن تمام داده‌ها</button>
+          </div>
+          <div style="margin-top:20px;">
+            <div class="stat-label" style="margin-bottom:8px;">تعداد طرف‌های حساب: <span id="backupParties" style="color:#c6a961;">0</span></div>
+            <div class="stat-label" style="margin-bottom:8px;">تعداد فاکتورها: <span id="backupInvoices" style="color:#c6a961;">0</span></div>
+            <div class="stat-label" style="margin-bottom:8px;">تعداد چک‌ها: <span id="backupChecks" style="color:#c6a961;">0</span></div>
+            <div class="stat-label">آخرین پشتیبان: <span id="lastBackup" style="color:#c6a961;">—</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<div id="partyModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <div class="modal-title" id="partyModalTitle">طرف حساب جدید</div>
+      <button class="close-btn" onclick="closeModal('partyModal')">×</button>
+    </div>
+    <div class="form-grid">
+      <div class="form-group">
+        <label>نوع طرف حساب *</label>
+        <select id="partyType" onchange="updatePartyForm()">
+          <option value="customer">مشتری </option>
+          <option value="partner">همکار (بازاریاب/طراح)</option>
+          <option value="supplier">تأمین‌کننده </option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>شخصیت *</label>
+        <select id="partyLegalType">
+          <option value="legal">حقوقی (شرکت/سازمان)</option>
+          <option value="real">حقیقی (فرد)</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label id="partyNameLabel">نام شرکت *</label>
+        <input type="text" id="partyName">
+      </div>
+      <div class="form-group">
+        <label id="partyPersonLabel">نام مسئول / شخص</label>
+        <input type="text" id="partyPersonName">
+      </div>
+      <div class="form-group">
+        <label>شماره تماس *</label>
+        <input type="text" id="partyPhone">
+      </div>
+      <div class="form-group">
+        <label>شناسه ملی / کد ملی</label>
+        <input type="text" id="partyNationalId">
+      </div>
+      <div class="form-group">
+        <label>کد اقتصادی</label>
+        <input type="text" id="partyEconomicCode">
+      </div>
+      <div class="form-group">
+        <label>شماره ثبت</label>
+        <input type="text" id="partyRegNumber">
+      </div>
+      <div class="form-group" id="commissionGroup" style="display:none;">
+        <label>درصد پورسانت (%)</label>
+        <input type="text" id="partyCommission" oninput="handleMoneyInput(this)">
+      </div>
+      <div class="form-group">
+        <label>مانده حساب قبلی (تومان)</label>
+        <input type="text" id="partyBalance" oninput="handleMoneyInput(this)">
+      </div>
+      <div class="form-group" style="grid-column:1/-1;">
+        <label>آدرس</label>
+        <textarea id="partyAddress" rows="2"></textarea>
+      </div>
+      <div class="form-group" style="grid-column:1/-1;">
+        <label>توضیحات</label>
+        <textarea id="partyNotes" rows="2"></textarea>
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:18px;flex-wrap:wrap;">
+      <button class="btn btn-secondary" onclick="closeModal('partyModal')">انصراف</button>
+      <button class="btn btn-primary" onclick="saveParty()">💾 ذخیره</button>
+    </div>
+  </div>
+</div>
+
+<div id="invoiceViewModal" class="modal">
+  <div class="modal-content" style="max-width:950px;">
+    <div class="modal-header">
+      <div class="modal-title">مشاهده فاکتور</div>
+      <button class="close-btn" onclick="closeModal('invoiceViewModal')">×</button>
+    </div>
+    <div id="invoiceViewContent"></div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:18px;flex-wrap:wrap;">
+      <button class="btn btn-secondary" onclick="closeModal('invoiceViewModal')">بستن</button>
+      <button class="btn btn-primary" onclick="printInvoice()">🖨️ چاپ / PDF</button>
+      <button class="btn btn-success" onclick="takeScreenshot()">📸 اسکرین‌شات برای شبکه‌های اجتماعی</button>
+    </div>
+  </div>
+</div>
+
+<div id="paymentModal" class="modal">
+  <div class="modal-content" style="max-width:550px;">
+    <div class="modal-header">
+      <div class="modal-title">ثبت پرداخت</div>
+      <button class="close-btn" onclick="closeModal('paymentModal')">×</button>
+    </div>
+    <div class="form-grid">
+      <div class="form-group">
+        <label>مبلغ (تومان) *</label>
+        <input type="text" id="payAmount" oninput="handleMoneyInput(this)">
+      </div>
+      <div class="form-group">
+        <label>تاریخ</label>
+        <input type="text" id="payDate" readonly>
+      </div>
+      <div class="form-group">
+        <label>روش پرداخت</label>
+        <select id="payMethod">
+          <option value="cash">نقدی</option>
+          <option value="transfer">انتقال وجه</option>
+          <option value="card">کارت به کارت</option>
+          <option value="sheba">شبا</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>شماره پیگیری / مرجع</label>
+        <input type="text" id="payRef">
+      </div>
+      <div class="form-group" style="grid-column:1/-1;">
+        <label>شرح</label>
+        <input type="text" id="payDesc">
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:18px;flex-wrap:wrap;">
+      <button class="btn btn-secondary" onclick="closeModal('paymentModal')">انصراف</button>
+      <button class="btn btn-primary" onclick="savePayment()">💾 ذخیره</button>
+    </div>
+  </div>
+</div>
+
+<div id="checkModal" class="modal">
+  <div class="modal-content" style="max-width:550px;">
+    <div class="modal-header">
+      <div class="modal-title">ثبت چک</div>
+      <button class="close-btn" onclick="closeModal('checkModal')">×</button>
+    </div>
+    <div class="form-grid">
+      <div class="form-group">
+        <label>شماره چک *</label>
+        <input type="text" id="chkNumber">
+      </div>
+      <div class="form-group">
+        <label>نام بانک *</label>
+        <input type="text" id="chkBank">
+      </div>
+      <div class="form-group">
+        <label>مبلغ (تومان) *</label>
+        <input type="text" id="chkAmount" oninput="handleMoneyInput(this)">
+      </div>
+      <div class="form-group">
+        <label>تاریخ سررسید</label>
+        <input type="text" id="chkDueDate" placeholder="1405/01/01">
+      </div>
+      <div class="form-group">
+        <label>وضعیت</label>
+        <select id="chkStatus">
+          <option value="pending">در انتظار وصول</option>
+          <option value="cashed">وصول شده</option>
+          <option value="bounced">برگشتی</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>صاحب چک</label>
+        <input type="text" id="chkHolder">
+      </div>
+      <div class="form-group" style="grid-column:1/-1;">
+        <label>شرح</label>
+        <input type="text" id="chkDesc">
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:18px;flex-wrap:wrap;">
+      <button class="btn btn-secondary" onclick="closeModal('checkModal')">انصراف</button>
+      <button class="btn btn-primary" onclick="saveCheck()">💾 ذخیره</button>
+    </div>
+  </div>
+</div>
+
+<div id="bankModal" class="modal">
+  <div class="modal-content" style="max-width:550px;">
+    <div class="modal-header">
+      <div class="modal-title" id="bankModalTitle">حساب بانکی جدید</div>
+      <button class="close-btn" onclick="closeModal('bankModal')">×</button>
+    </div>
+    <div class="form-grid">
+      <div class="form-group">
+        <label>نام بانک *</label>
+        <input type="text" id="bnkName">
+      </div>
+      <div class="form-group">
+        <label>شماره کارت</label>
+        <input type="text" id="bnkCard">
+      </div>
+      <div class="form-group">
+        <label>شماره حساب</label>
+        <input type="text" id="bnkAccount">
+      </div>
+      <div class="form-group">
+        <label>شماره شبا</label>
+        <input type="text" id="bnkIban">
+      </div>
+      <div class="form-group">
+        <label>نام صاحب حساب</label>
+        <input type="text" id="bnkHolder">
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:18px;flex-wrap:wrap;">
+      <button class="btn btn-secondary" onclick="closeModal('bankModal')">انصراف</button>
+      <button class="btn btn-primary" onclick="saveBank()">💾 ذخیره</button>
+    </div>
+  </div>
+</div>
+
+<div id="purchasePaymentModal" class="modal">
+  <div class="modal-content" style="max-width:550px;">
+    <div class="modal-header">
+      <div class="modal-title">ثبت پرداخت به تأمین‌کننده</div>
+      <button class="close-btn" onclick="closeModal('purchasePaymentModal')">×</button>
+    </div>
+    <div class="form-grid">
+      <div class="form-group">
+        <label>مبلغ (تومان) *</label>
+        <input type="text" id="purPayAmount" oninput="handleMoneyInput(this)">
+      </div>
+      <div class="form-group">
+        <label>تاریخ</label>
+        <input type="text" id="purPayDate" readonly>
+      </div>
+      <div class="form-group">
+        <label>روش پرداخت</label>
+        <select id="purPayMethod">
+          <option value="cash">نقدی</option>
+          <option value="transfer">انتقال وجه</option>
+          <option value="card">کارت</option>
+          <option value="sheba">شبا</option>
+          <option value="check">چک</option>
+        </select>
+      </div>
+      <div class="form-group" style="grid-column:1/-1;">
+        <label>شرح</label>
+        <input type="text" id="purPayDesc">
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:18px;flex-wrap:wrap;">
+      <button class="btn btn-secondary" onclick="closeModal('purchasePaymentModal')">انصراف</button>
+      <button class="btn btn-primary" onclick="savePurchasePayment()">💾 ذخیره</button>
+    </div>
+  </div>
+</div>
+
+<div id="printArea" style="display:none;"></div>
+<div id="toast" class="toast"></div>
+
+<script>
+// توابع کمکی ساده و تمیز
+function parseNumber(s) {
+  if (typeof s === 'number') return s;
+  if (!s) return 0;
+  const cleaned = String(s).replace(/[^\d.-]/g, '');
+  return Number(cleaned) || 0;
+}
+
+function handleMoneyInput(el) {
+  const startPos = el.selectionStart || 0;
+  const oldLen = el.value.length;
+  let value = el.value.replace(/[^\d]/g, '');
+  if (value) {
+    const num = parseInt(value, 10);
+    el.value = num.toLocaleString('en-US');  // ← تغییر به en-US
+  } else {
+    el.value = '';
+  }
+  const newLen = el.value.length;
+  const diff = newLen - oldLen;
+  const newPos = startPos + diff;
+  setTimeout(() => {
+    try { el.setSelectionRange(newPos, newPos); } catch(e) {}
+  }, 0);
+}
+
+function formatNumber(n) {
+  if (n === null || n === undefined || isNaN(n)) return '0';
+  return Math.round(n).toLocaleString('en-US');
+}
+
+function uid() { return Date.now().toString(36) + Math.random().toString(36).substr(2,7); }
+
+function showToast(msg, type='success') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show' + (type === 'error' ? ' error' : '');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+
+function getPartyName(id) {
+  const p = state.parties.find(x => x.id === id);
+  return p ? p.name : '—';
+}
+
+function statusBadge(s) {
+  const map = {
+    paid: ['badge-paid', 'تسویه شده'],
+    unpaid: ['badge-unpaid', 'پرداخت نشده'],
+    partial: ['badge-partial', 'قسمتی پرداخت'],
+    sent: ['badge-sent', 'ارسال شده'],
+    credit: ['badge-credit', 'نسیه'],
+    pending: ['badge-pending', 'در انتظار'],
+    cashed: ['badge-cashed', 'وصول شده'],
+    bounced: ['badge-bounced', 'برگشتی']
+  };
+  const [cls, txt] = map[s] || ['badge-sent', s];
+  return `<span class="badge ${cls}">${txt}</span>`;
+}
+
+function typeBadge(t) {
+  const map = {
+    customer: ['type-customer', 'مشتری'],
+    partner: ['type-partner', 'همکار'],
+    supplier: ['type-supplier', 'تأمین‌کننده']
+  };
+  const [cls, txt] = map[t] || ['type-customer', t];
+  return `<span class="party-type-badge ${cls}">${txt}</span>`;
+}
+
+// تاریخ شمسی
+const Jalaali = {
+  toJalaali(gy, gm, gd) {
+    const g_d_m = [0,31,59,90,120,151,181,212,243,273,304,334];
+    let jy = (gy <= 1600) ? 0 : 979;
+    gy -= (gy <= 1600) ? 621 : 1600;
+    const gy2 = (gm > 2) ? (gy + 1) : gy;
+    let days = 365*gy + Math.floor((gy2+3)/4) - Math.floor((gy2+99)/100) + Math.floor((gy2+399)/400) - 80 + gd + g_d_m[gm-1];
+    jy += 33*Math.floor(days/12053);
+    days %= 12053;
+    jy += 4*Math.floor(days/1461);
+    days %= 1461;
+    if (days > 365) { jy += Math.floor((days-1)/365); days = (days-1)%365; }
+    const jm = (days < 186) ? 1 + Math.floor(days/31) : 7 + Math.floor((days-186)/30);
+    const jd = 1 + ((days < 186) ? (days%31) : ((days-186)%30));
+    return {jy, jm, jd};
+  },
+  today() {
+    const d = new Date();
+    return this.toJalaali(d.getFullYear(), d.getMonth()+1, d.getDate());
+  },
+  format(jy, jm, jd) {
+    return `${jy}/${String(jm).padStart(2,'0')}/${String(jd).padStart(2,'0')}`;
+  },
+  todayFormatted() {
+    const t = this.today();
+    return this.format(t.jy, t.jm, t.jd);
+  },
+  toCompact(jy, jm, jd) {
+    return `${jy}${String(jm).padStart(2,'0')}${String(jd).padStart(2,'0')}`;
+  },
+  todayCompact() {
+    const t = this.today();
+    return this.toCompact(t.jy, t.jm, t.jd);
+  },
+  compare(a, b) {
+    if (!a || !b) return 0;
+    const pa = a.split('/').map(Number);
+    const pb = b.split('/').map(Number);
+    const da = pa[0]*10000 + pa[1]*100 + pa[2];
+    const db = pb[0]*10000 + pb[1]*100 + pb[2];
+    return da - db;
+  }
+};
+
+// IndexedDB
+const DB = {
+  db: null,
+  async init() {
+    return new Promise((resolve, reject) => {
+      const req = indexedDB.open('KaravangAccountingDB', 1);
+      req.onupgradeneeded = e => {
+        const db = e.target.result;
+        if (!db.objectStoreNames.contains('parties')) db.createObjectStore('parties', {keyPath:'id'});
+        if (!db.objectStoreNames.contains('invoices')) db.createObjectStore('invoices', {keyPath:'id'});
+        if (!db.objectStoreNames.contains('purchases')) db.createObjectStore('purchases', {keyPath:'id'});
+        if (!db.objectStoreNames.contains('expenses')) db.createObjectStore('expenses', {keyPath:'id'});
+        if (!db.objectStoreNames.contains('payments')) db.createObjectStore('payments', {keyPath:'id'});
+        if (!db.objectStoreNames.contains('checks')) db.createObjectStore('checks', {keyPath:'id'});
+        if (!db.objectStoreNames.contains('bankAccounts')) db.createObjectStore('bankAccounts', {keyPath:'id'});
+        if (!db.objectStoreNames.contains('settings')) db.createObjectStore('settings', {keyPath:'key'});
+      };
+      req.onsuccess = e => { this.db = e.target.result; resolve(); };
+      req.onerror = e => reject(e);
+    });
+  },
+  _tx(store, mode) { return this.db.transaction(store, mode); },
+  async getAll(store) {
+    return new Promise((resolve, reject) => {
+      const req = this._tx(store, 'readonly').objectStore(store).getAll();
+      req.onsuccess = () => resolve(req.result || []);
+      req.onerror = e => reject(e);
+    });
+  },
+  async get(store, id) {
+    return new Promise((resolve, reject) => {
+      const req = this._tx(store, 'readonly').objectStore(store).get(id);
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = e => reject(e);
+    });
+  },
+  async put(store, data) {
+    return new Promise((resolve, reject) => {
+      const req = this._tx(store, 'readwrite').objectStore(store).put(data);
+      req.onsuccess = () => resolve();
+      req.onerror = e => reject(e);
+    });
+  },
+  async delete(store, id) {
+    return new Promise((resolve, reject) => {
+      const req = this._tx(store, 'readwrite').objectStore(store).delete(id);
+      req.onsuccess = () => resolve();
+      req.onerror = e => reject(e);
+    });
+  },
+  async clear(store) {
+    return new Promise((resolve, reject) => {
+      const req = this._tx(store, 'readwrite').objectStore(store).clear();
+      req.onsuccess = () => resolve();
+      req.onerror = e => reject(e);
+    });
+  }
+};
+
+// وضعیت برنامه
+const state = {
+  parties: [],
+  invoices: [],
+  purchases: [],
+  expenses: [],
+  payments: [],
+  checks: [],
+  bankAccounts: [],
+  settings: { companyName: '', phone: '', address: '' },
+  currentInvoice: { items: [], payments: [], checks: [], editingId: null },
+  currentViewInvoice: null,
+  editingPartyId: null,
+  editingBankId: null,
+  editingPurchaseId: null,
+  reportFilter: { fromDate: '', toDate: '', customerId: '' }
+};
+
+// ناوبری
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
+  const menu = document.querySelector(`.menu-item[data-page="${id}"]`);
+  if (menu) menu.classList.add('active');
+  
+  if (id === 'dashboard') renderDashboard();
+  if (id === 'parties') renderParties();
+  if (id === 'newInvoice') initNewInvoice();
+  if (id === 'invoices') renderInvoices();
+  if (id === 'purchases') renderPurchases();
+  if (id === 'expenses') renderExpenses();
+  if (id === 'payments') renderPayments();
+  if (id === 'reports') renderReports();
+  if (id === 'settings') loadSettings();
+}
+
+// داشبورد
+function renderDashboard() {
+  const today = Jalaali.todayFormatted();
+  document.getElementById('todayDate').textContent = ' ' + today;
+  
+  const totalSales = state.invoices.reduce((s,i) => s + (i.totalSale || 0), 0);
+  const totalCost = state.invoices.reduce((s,i) => s + (i.totalPurchase || 0), 0);
+  const totalProfit = totalSales - totalCost;
+  const profitPercent = totalSales > 0 ? ((totalProfit / totalSales) * 100).toFixed(1) : 0;
+  const unpaidInvoices = state.invoices.filter(i => i.status !== 'paid').length;
+  
+  document.getElementById('dashboardStats').innerHTML = `
+    <div class="stat-card">
+      <div class="stat-label">مجموع فروش</div>
+      <div class="stat-value">${formatNumber(totalSales)}</div>
+      <div class="stat-sub">تومان</div>
+    </div>
+    <div class="stat-card" style="border-right-color:#e74c3c;">
+      <div class="stat-label">مجموع هزینه</div>
+      <div class="stat-value">${formatNumber(totalCost)}</div>
+      <div class="stat-sub">تومان</div>
+    </div>
+    <div class="stat-card" style="border-right-color:#27ae60;">
+      <div class="stat-label">سود ناخالص</div>
+      <div class="stat-value" style="color:#2ecc71;">${formatNumber(totalProfit)}</div>
+      <div class="stat-sub">${profitPercent}% از فروش</div>
+    </div>
+    <div class="stat-card" style="border-right-color:#f39c12;">
+      <div class="stat-label">فاکتورهای تسویه نشده</div>
+      <div class="stat-value">${unpaidInvoices}</div>
+      <div class="stat-sub">عدد</div>
+    </div>
+  `;
+  
+  const recent = [...state.invoices].sort((a,b) => b.createdAt - a.createdAt).slice(0, 6);
+  if (recent.length === 0) {
+    document.getElementById('recentInvoices').innerHTML = '<div class="empty-state"><div class="empty-state-icon">📭</div>هنوز فاکتوری ثبت نشده است</div>';
+  } else {
+    document.getElementById('recentInvoices').innerHTML = `
+      <table>
+        <thead><tr><th>شماره</th><th>خریدار</th><th>تاریخ</th><th>مبلغ</th><th>وضعیت</th></tr></thead>
+        <tbody>${recent.map(i => `
+          <tr>
+            <td><strong>${i.number}</strong></td>
+            <td>${getPartyName(i.customerId)}</td>
+            <td>${i.date}</td>
+            <td>${formatNumber(i.totalSale)}</td>
+            <td>${statusBadge(i.status)}</td>
+          </tr>`).join('')}</tbody>
+      </table>`;
+  }
+}
+
+// طرف‌های حساب
+function showPartyTab(tab) {
+  document.querySelectorAll('#parties .tab').forEach(x => x.classList.remove('active'));
+  document.querySelectorAll('#parties .tab-content').forEach(x => x.classList.remove('active'));
+  document.querySelector(`#parties .tab[data-tab="${tab}"]`).classList.add('active');
+  document.getElementById(tab + 'Tab').classList.add('active');
+}
+
+function updatePartyForm() {
+  const type = document.getElementById('partyType').value;
+  const isReal = document.getElementById('partyLegalType').value === 'real';
+  const nameLbl = document.getElementById('partyNameLabel');
+  const personLbl = document.getElementById('partyPersonLabel');
+  const commGroup = document.getElementById('commissionGroup');
+  
+  if (type === 'customer') {
+    nameLbl.textContent = isReal ? 'نام و نام خانوادگی *' : 'نام شرکت *';
+    personLbl.textContent = isReal ? 'نام پدر' : 'نام مسئول / نماینده';
+    commGroup.style.display = 'none';
+  } else if (type === 'partner') {
+    nameLbl.textContent = 'نام و نام خانوادگی *';
+    personLbl.textContent = 'تخصص / عنوان شغلی';
+    commGroup.style.display = 'block';
+  } else {
+    nameLbl.textContent = isReal ? 'نام و نام خانوادگی *' : 'نام شرکت / کسب‌وکار *';
+    personLbl.textContent = isReal ? 'نام پدر' : 'نام مسئول';
+    commGroup.style.display = 'none';
+  }
+}
+
+function openPartyModal(id = null) {
+  state.editingPartyId = id;
+  document.getElementById('partyModalTitle').textContent = id ? 'ویرایش طرف حساب' : 'طرف حساب جدید';
+  if (id) {
+    const p = state.parties.find(x => x.id === id);
+    document.getElementById('partyType').value = p.type || 'customer';
+    document.getElementById('partyLegalType').value = p.legalType || 'legal';
+    document.getElementById('partyName').value = p.name || '';
+    document.getElementById('partyPersonName').value = p.personName || '';
+    document.getElementById('partyPhone').value = p.phone || '';
+    document.getElementById('partyNationalId').value = p.nationalId || '';
+    document.getElementById('partyEconomicCode').value = p.economicCode || '';
+    document.getElementById('partyRegNumber').value = p.regNumber || '';
+    document.getElementById('partyCommission').value = p.commission ? formatNumber(p.commission) : '';
+    document.getElementById('partyBalance').value = p.balance ? formatNumber(p.balance) : '';
+    document.getElementById('partyAddress').value = p.address || '';
+    document.getElementById('partyNotes').value = p.notes || '';
+  } else {
+    ['partyName','partyPersonName','partyPhone','partyNationalId','partyEconomicCode','partyRegNumber','partyCommission','partyBalance','partyAddress','partyNotes'].forEach(i => document.getElementById(i).value = '');
+    document.getElementById('partyType').value = 'customer';
+    document.getElementById('partyLegalType').value = 'legal';
+  }
+  updatePartyForm();
+  document.getElementById('partyModal').classList.add('active');
+}
+
+async function saveParty() {
+  const name = document.getElementById('partyName').value.trim();
+  if (!name) { showToast('نام الزامی است', 'error'); return; }
+  const phone = document.getElementById('partyPhone').value.trim();
+  if (!phone) { showToast('شماره تماس الزامی است', 'error'); return; }
+  
+  const data = {
+    id: state.editingPartyId || uid(),
+    type: document.getElementById('partyType').value,
+    legalType: document.getElementById('partyLegalType').value,
+    name: name,
+    personName: document.getElementById('partyPersonName').value,
+    phone: phone,
+    nationalId: document.getElementById('partyNationalId').value,
+    economicCode: document.getElementById('partyEconomicCode').value,
+    regNumber: document.getElementById('partyRegNumber').value,
+    commission: parseNumber(document.getElementById('partyCommission').value),
+    balance: parseNumber(document.getElementById('partyBalance').value),
+    address: document.getElementById('partyAddress').value,
+    notes: document.getElementById('partyNotes').value,
+    createdAt: Date.now()
+  };
+  await DB.put('parties', data);
+  state.parties = await DB.getAll('parties');
+  closeModal('partyModal');
+  renderParties();
+  showToast('طرف حساب ذخیره شد');
+}
+
+async function deleteParty(id) {
+  if (!confirm('آیا از حذف این طرف حساب مطمئن هستید؟')) return;
+  await DB.delete('parties', id);
+  state.parties = await DB.getAll('parties');
+  renderParties();
+  showToast('حذف شد');
+}
+
+function calcPartyBalance(pid) {
+  const party = state.parties.find(p => p.id === pid);
+  if (!party) return 0;
+  let total = party.balance || 0;
+  if (party.type === 'customer') {
+    state.invoices.filter(i => i.customerId === pid).forEach(i => {
+      total += i.totalSale || 0;
+      (i.payments || []).forEach(p => total -= parseNumber(p.amount));
+      (i.checks || []).forEach(c => { if (c.status === 'cashed') total -= parseNumber(c.amount); });
+    });
+  } else if (party.type === 'supplier') {
+    state.purchases.filter(p => p.supplierId === pid).forEach(p => {
+      total += p.totalPurchase || 0;
+      (p.payments || []).forEach(py => total -= parseNumber(py.amount));
+    });
+  }
+  return total;
+}
+
+function renderParties() {
+  const q = (document.getElementById('partySearch')?.value || '').toLowerCase();
+  const filter = (list) => list.filter(p => !q || p.name.toLowerCase().includes(q) || (p.phone||'').includes(q) || (p.nationalId||'').includes(q));
+  
+  const customers = filter(state.parties.filter(p => p.type === 'customer'));
+  const partners = filter(state.parties.filter(p => p.type === 'partner'));
+  const suppliers = filter(state.parties.filter(p => p.type === 'supplier'));
+  
+  const renderTable = (list, showCommission) => {
+    if (list.length === 0) return '<div class="empty-state"><div class="empty-state-icon">👥</div>موردی ثبت نشده</div>';
+    return `<table>
+      <thead><tr><th>نوع</th><th>نام</th><th>تماس</th><th>شناسه</th>${showCommission?'<th>پورسانت</th>':''}<th>مانده قبلی</th><th>مانده فعلی</th><th>عملیات</th></tr></thead>
+      <tbody>${list.map(p => {
+        const balance = calcPartyBalance(p.id);
+        const balColor = p.type === 'customer' ? (balance>0?'#f39c12':'#27ae60') : (balance>0?'#e74c3c':'#27ae60');
+        return `<tr>
+          <td>${typeBadge(p.type)}</td>
+          <td><strong>${p.name}</strong>${p.personName?'<br><small style="color:#888;">'+p.personName+'</small>':''}</td>
+          <td>${p.phone||'—'}</td>
+          <td>${p.nationalId||'—'}</td>
+          ${showCommission?`<td>${p.commission?formatNumber(p.commission)+'%':'—'}</td>`:''}
+          <td>${formatNumber(p.balance)}</td>
+          <td style="color:${balColor};font-weight:bold;">${formatNumber(balance)}</td>
+          <td>
+            <button class="btn btn-sm btn-secondary" onclick="openPartyModal('${p.id}')">ویرایش</button>
+            <button class="btn btn-sm btn-danger" onclick="deleteParty('${p.id}')">حذف</button>
+          </td>
+        </tr>`;
+      }).join('')}</tbody>
+    </table>`;
+  };
+  
+  document.getElementById('customersTab').innerHTML = renderTable(customers, false);
+  document.getElementById('partnersTab').innerHTML = renderTable(partners, true);
+  document.getElementById('suppliersTab').innerHTML = renderTable(suppliers, false);
+}
+
+// صدور فاکتور
+async function initNewInvoice() {
+  const sel = document.getElementById('invCustomer');
+  const customers = state.parties.filter(p => p.type === 'customer');
+  sel.innerHTML = '<option value="">انتخاب خریدار...</option>' + customers.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+  
+  const partnerSel = document.getElementById('invPartner');
+  const partners = state.parties.filter(p => p.type === 'partner');
+  partnerSel.innerHTML = '<option value="">انتخاب همکار...</option>' + partners.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
+  
+  const supplierSel = document.getElementById('invSupplier');
+  const suppliers = state.parties.filter(p => p.type === 'supplier');
+  supplierSel.innerHTML = '<option value="">انتخاب تأمین‌کننده...</option>' + suppliers.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
+  
+  const bankSel = document.getElementById('invBankAccount');
+  bankSel.innerHTML = '<option value="">انتخاب حساب بانکی...</option>' + state.bankAccounts.map(b => 
+    `<option value="${b.id}">${b.name} - ${b.card || b.account || b.iban || ''}</option>`
+  ).join('');
+  
+  if (!state.currentInvoice.editingId) {
+    document.getElementById('invDate').value = Jalaali.todayFormatted();
+    document.getElementById('invNumber').value = await generateInvoiceNumber();
+    state.currentInvoice = { items: [], payments: [], checks: [], editingId: null };
+    document.getElementById('invoiceFormTitle').textContent = '➕ صدور فاکتور فروش جدید';
+    document.getElementById('invNote').value = '';
+    document.getElementById('invDiscountPercent').value = '0';
+    document.getElementById('invDiscountAmount').value = '0';
+    document.getElementById('invVat').value = '0';
+    document.getElementById('invBankAccount').value = '';
+    document.getElementById('invPartner').value = '';
+    document.getElementById('invSupplier').value = '';
+    renderInvoiceItems();
+    renderInvoicePayments();
+  } else {
+    document.getElementById('invoiceFormTitle').textContent = '✏️ ویرایش فاکتور فروش';
+  }
+  if (state.currentInvoice.customerId) {
+    sel.value = state.currentInvoice.customerId;
+    loadCustomerBalance();
+  }
+  if (state.currentInvoice.partnerId) document.getElementById('invPartner').value = state.currentInvoice.partnerId;
+  if (state.currentInvoice.supplierId) document.getElementById('invSupplier').value = state.currentInvoice.supplierId;
+}
+
+async function generateInvoiceNumber() {
+  const prefix = Jalaali.todayCompact();
+  const todayInvs = state.invoices.filter(i => i.number && i.number.startsWith(prefix));
+  const next = todayInvs.length + 1;
+  return `${prefix}${String(next).padStart(3,'0')}`;
+}
+
+function loadCustomerBalance() {
+  const cid = document.getElementById('invCustomer').value;
+  state.currentInvoice.customerId = cid;
+  if (cid) {
+    const b = calcPartyBalance(cid);
+    document.getElementById('invBalance').value = formatNumber(b) + ' تومان';
+  } else {
+    document.getElementById('invBalance').value = '';
+  }
+}
+
+function addInvoiceItem() {
+  state.currentInvoice.items.push({ id: uid(), name:'', qty:1, unit:'عدد', unitSale:0, unitPurchase:0 });
+  renderInvoiceItems();
+}
+
+function removeInvoiceItem(id) {
+  state.currentInvoice.items = state.currentInvoice.items.filter(i => i.id !== id);
+  renderInvoiceItems();
+}
+
+function updateItem(id, field, value) {
+  const item = state.currentInvoice.items.find(i => i.id === id);
+  if (!item) return;
+  if (field === 'name' || field === 'unit') item[field] = value;
+  else item[field] = parseNumber(value);
+  renderInvoiceItems();
+}
+
+function renderInvoiceItems() {
+  const tb = document.getElementById('invItems');
+  if (state.currentInvoice.items.length === 0) {
+    tb.innerHTML = '<tr><td colspan="8" style="text-align:center;color:#666;padding:25px;">ردیفی اضافه نشده - دکمه «افزودن ردیف» را بزنید</td></tr>';
+  } else {
+    tb.innerHTML = state.currentInvoice.items.map((it, idx) => {
+      const ts = it.qty * it.unitSale;
+      return `<tr>
+        <td style="text-align:center;">${idx+1}</td>
+        <td><input type="text" value="${it.name}" onchange="updateItem('${it.id}','name',this.value)" placeholder="نام کالا/خدمات"></td>
+        <td><input type="text" value="${it.qty}" oninput="this.value=this.value.replace(/[^\\d]/g,'');updateItem('${it.id}','qty',this.value)"></td>
+        <td><input type="text" value="${it.unit}" onchange="updateItem('${it.id}','unit',this.value)"></td>
+        <td><input type="text" value="${it.unitSale?it.unitSale.toLocaleString('en-US'):''}" oninput="handleMoneyInput(this);updateItem('${it.id}','unitSale',this.value)"></td>
+        <td><input type="text" value="${it.unitPurchase?it.unitPurchase.toLocaleString('en-US'):''}" oninput="handleMoneyInput(this);updateItem('${it.id}','unitPurchase',this.value)"></td>
+        <td style="font-weight:bold;color:#c6a961;">${formatNumber(ts)}</td>
+        <td style="text-align:center;"><button class="btn btn-sm btn-danger" onclick="removeInvoiceItem('${it.id}')">×</button></td>
+      </tr>`;
+    }).join('');
+  }
+  calculateInvoiceTotals();
+}
+
+function calculateInvoiceTotals() {
+  const subtotal = state.currentInvoice.items.reduce((s,i) => s + i.qty*i.unitSale, 0);
+  const discP = parseNumber(document.getElementById('invDiscountPercent').value);
+  const discA = parseNumber(document.getElementById('invDiscountAmount').value);
+  const vat = document.getElementById('invVat').value === '1';
+  
+  const discFromPercent = subtotal * (discP / 100);
+  const totalDiscount = discFromPercent + discA;
+  const afterDiscount = Math.max(0, subtotal - totalDiscount);
+  const vatAmount = vat ? afterDiscount * 0.1 : 0;
+  const total = afterDiscount + vatAmount;
+  
+  document.getElementById('invSubtotal').textContent = formatNumber(subtotal) + ' تومان';
+  document.getElementById('invDiscount').textContent = formatNumber(totalDiscount) + ' تومان';
+  document.getElementById('invVatAmount').textContent = formatNumber(vatAmount) + ' تومان';
+  document.getElementById('invTotal').textContent = formatNumber(total) + ' تومان';
+}
+
+function addPayment(type) {
+  if (type === 'cash') {
+    state.currentInvoice.payments.push({ id: uid(), amount:0, date: Jalaali.todayFormatted(), method:'cash', ref:'', desc:'' });
+  } else {
+    state.currentInvoice.checks.push({ id: uid(), number:'', bank:'', amount:0, dueDate:'', holder:'', status:'pending', desc:'' });
+  }
+  renderInvoicePayments();
+}
+
+function removePayment(id) {
+  state.currentInvoice.payments = state.currentInvoice.payments.filter(p => p.id !== id);
+  renderInvoicePayments();
+}
+
+function removeCheck(id) {
+  state.currentInvoice.checks = state.currentInvoice.checks.filter(c => c.id !== id);
+  renderInvoicePayments();
+}
+
+function updatePayment(id, field, value) {
+  const p = state.currentInvoice.payments.find(x => x.id === id);
+  if (!p) return;
+  if (field === 'amount') p.amount = parseNumber(value);
+  else p[field] = value;
+}
+
+function updateCheck(id, field, value) {
+  const c = state.currentInvoice.checks.find(x => x.id === id);
+  if (!c) return;
+  if (field === 'amount') c.amount = parseNumber(value);
+  else c[field] = value;
+}
+
+function renderInvoicePayments() {
+  const c = document.getElementById('invPayments');
+  let html = '';
+  
+  if (state.currentInvoice.payments.length > 0) {
+    html += '<div style="margin-bottom:10px;font-weight:bold;color:#c6a961;">پرداخت‌های نقدی/انتقال/کارت:</div>';
+    html += '<table class="items-table"><thead><tr><th>تاریخ</th><th>مبلغ</th><th>روش</th><th>شماره پیگیری</th><th>شرح</th><th></th></tr></thead><tbody>';
+    state.currentInvoice.payments.forEach(p => {
+      html += `<tr>
+        <td><input type="text" value="${p.date}" onchange="updatePayment('${p.id}','date',this.value)"></td>
+        <td><input type="text" value="${p.amount?p.amount.toLocaleString('en-US'):''}" oninput="handleMoneyInput(this);updatePayment('${p.id}','amount',this.value)"></td>
+        <td><select onchange="updatePayment('${p.id}','method',this.value)">
+          <option value="cash" ${p.method==='cash'?'selected':''}>نقدی</option>
+          <option value="transfer" ${p.method==='transfer'?'selected':''}>انتقال وجه</option>
+          <option value="card" ${p.method==='card'?'selected':''}>کارت به کارت</option>
+          <option value="sheba" ${p.method==='sheba'?'selected':''}>شبا</option>
+        </select></td>
+        <td><input type="text" value="${p.ref||''}" onchange="updatePayment('${p.id}','ref',this.value)"></td>
+        <td><input type="text" value="${p.desc||''}" onchange="updatePayment('${p.id}','desc',this.value)"></td>
+        <td><button class="btn btn-sm btn-danger" onclick="removePayment('${p.id}')">×</button></td>
+      </tr>`;
+    });
+    html += '</tbody></table>';
+  }
+  
+  if (state.currentInvoice.checks.length > 0) {
+    html += '<div style="margin-top:15px;margin-bottom:10px;font-weight:bold;color:#c6a961;">چک‌ها:</div>';
+    html += '<table class="items-table"><thead><tr><th>شماره چک</th><th>بانک</th><th>مبلغ</th><th>سررسید</th><th>صاحب چک</th><th>شرح</th><th></th></tr></thead><tbody>';
+    state.currentInvoice.checks.forEach(ch => {
+      html += `<tr>
+        <td><input type="text" value="${ch.number}" onchange="updateCheck('${ch.id}','number',this.value)"></td>
+        <td><input type="text" value="${ch.bank}" onchange="updateCheck('${ch.id}','bank',this.value)"></td>
+        <td><input type="text" value="${ch.amount?ch.amount.toLocaleString('en-US'):''}" oninput="handleMoneyInput(this);updateCheck('${ch.id}','amount',this.value)"></td>
+        <td><input type="text" value="${ch.dueDate||''}" onchange="updateCheck('${ch.id}','dueDate',this.value)" placeholder="1405/01/01"></td>
+        <td><input type="text" value="${ch.holder||''}" onchange="updateCheck('${ch.id}','holder',this.value)"></td>
+        <td><input type="text" value="${ch.desc||''}" onchange="updateCheck('${ch.id}','desc',this.value)"></td>
+        <td><button class="btn btn-sm btn-danger" onclick="removeCheck('${ch.id}')">×</button></td>
+      </tr>`;
+    });
+    html += '</tbody></table>';
+  }
+  
+  if (!html) html = '<div style="color:#666;padding:15px;text-align:center;">پرداختی ثبت نشده</div>';
+  c.innerHTML = html;
+}
+
+async function saveInvoice() {
+  const cid = document.getElementById('invCustomer').value;
+  if (!cid) { showToast('انتخاب خریدار الزامی است', 'error'); return; }
+  if (state.currentInvoice.items.length === 0) { showToast('حداقل یک ردیف لازم است', 'error'); return; }
+  for (const it of state.currentInvoice.items) {
+    if (!it.name.trim()) { showToast('نام کالا/خدمات در همه ردیف‌ها الزامی است', 'error'); return; }
+  }
+  
+  const subtotal = state.currentInvoice.items.reduce((s,i) => s + i.qty*i.unitSale, 0);
+  const discP = parseNumber(document.getElementById('invDiscountPercent').value);
+  const discA = parseNumber(document.getElementById('invDiscountAmount').value);
+  const vat = document.getElementById('invVat').value === '1';
+  
+  const discFromPercent = subtotal * (discP / 100);
+  const totalDiscount = discFromPercent + discA;
+  const afterDiscount = Math.max(0, subtotal - totalDiscount);
+  const vatAmount = vat ? afterDiscount * 0.1 : 0;
+  const totalSale = afterDiscount + vatAmount;
+  
+  const totalPurchase = state.currentInvoice.items.reduce((s,i) => s + i.qty*i.unitPurchase, 0);
+  const totalPaid = state.currentInvoice.payments.reduce((s,p) => s + parseNumber(p.amount), 0) + state.currentInvoice.checks.reduce((s,c) => s + parseNumber(c.amount), 0);
+  
+  let status = 'unpaid';
+  if (totalPaid >= totalSale) status = 'paid';
+  else if (totalPaid > 0) status = 'partial';
+  else if (state.currentInvoice.checks.length > 0) status = 'credit';
+  else status = 'sent';
+  
+  const invoice = {
+    id: state.currentInvoice.editingId || uid(),
+    number: document.getElementById('invNumber').value,
+    date: document.getElementById('invDate').value,
+    customerId: cid,
+    partnerId: document.getElementById('invPartner').value,
+    supplierId: document.getElementById('invSupplier').value,
+    items: JSON.parse(JSON.stringify(state.currentInvoice.items)),
+    payments: JSON.parse(JSON.stringify(state.currentInvoice.payments)),
+    checks: JSON.parse(JSON.stringify(state.currentInvoice.checks)),
+    subtotal,
+    discount: totalDiscount,
+    vat: vatAmount,
+    totalSale,
+    totalPurchase,
+    profit: totalSale - totalPurchase,
+    note: document.getElementById('invNote').value,
+    bankAccountId: document.getElementById('invBankAccount').value,
+    status,
+    createdAt: Date.now()
+  };
+  
+  const isEdit = !!state.currentInvoice.editingId;
+  await DB.put('invoices', invoice);
+  
+  if (!isEdit) {
+    const purchase = {
+      id: uid(),
+      invoiceId: invoice.id,
+      number: 'P-' + invoice.number,
+      date: invoice.date,
+      supplierId: invoice.supplierId || cid,
+      items: invoice.items.map(i => ({...i, unitPrice: i.unitPurchase, total: i.qty * i.unitPurchase})),
+      totalPurchase: totalPurchase,
+      payments: [],
+      status: 'unpaid',
+      createdAt: Date.now()
+    };
+    await DB.put('purchases', purchase);
+    
+    const expense = {
+      id: uid(),
+      invoiceId: invoice.id,
+      number: 'E-' + invoice.number,
+      date: invoice.date,
+      description: 'هزینه تمام شده فاکتور فروش ' + invoice.number,
+      amount: totalPurchase,
+      createdAt: Date.now()
+    };
+    await DB.put('expenses', expense);
+  } else {
+    const existingPurchase = state.purchases.find(p => p.invoiceId === invoice.id);
+    if (existingPurchase) {
+      existingPurchase.totalPurchase = totalPurchase;
+      existingPurchase.items = invoice.items.map(i => ({...i, unitPrice: i.unitPurchase, total: i.qty * i.unitPurchase}));
+      existingPurchase.date = invoice.date;
+      existingPurchase.supplierId = invoice.supplierId || existingPurchase.supplierId;
+      await DB.put('purchases', existingPurchase);
+    }
+    
+    const existingExpense = state.expenses.find(e => e.invoiceId === invoice.id);
+    if (existingExpense) {
+      existingExpense.amount = totalPurchase;
+      existingExpense.date = invoice.date;
+      await DB.put('expenses', existingExpense);
+    }
+  }
+  
+  const currentCheckIds = state.currentInvoice.checks.map(c => c.id);
+  const allChecks = await DB.getAll('checks');
+  for (const check of allChecks) {
+    if (check.invoiceId === invoice.id && !currentCheckIds.includes(check.id)) {
+      await DB.delete('checks', check.id);
+    }
+  }
+  
+  for (const ch of invoice.checks) {
+    ch.invoiceId = invoice.id;
+    ch.type = 'received';
+    await DB.put('checks', ch);
+  }
+  
+  state.invoices = await DB.getAll('invoices');
+  state.purchases = await DB.getAll('purchases');
+  state.expenses = await DB.getAll('expenses');
+  state.checks = await DB.getAll('checks');
+  
+  showToast('فاکتور با موفقیت ذخیره شد');
+  resetInvoiceForm();
+  showPage('invoices');
+}
+
+function resetInvoiceForm() {
+  state.currentInvoice = { items: [], payments: [], checks: [], editingId: null, customerId: null, note: '' };
+  initNewInvoice();
+}
+
+// فاکتورهای فروش
+async function renderInvoices() {
+  const q = (document.getElementById('invoiceSearch')?.value || '').toLowerCase();
+  const st = document.getElementById('invoiceStatusFilter')?.value || '';
+  let list = state.invoices.filter(i => {
+    const matchQ = !q || i.number.toLowerCase().includes(q) || getPartyName(i.customerId).toLowerCase().includes(q);
+    const matchSt = !st || i.status === st;
+    return matchQ && matchSt;
+  }).sort((a,b) => b.createdAt - a.createdAt);
+  
+  if (list.length === 0) {
+    document.getElementById('invoicesList').innerHTML = '<div class="empty-state"><div class="empty-state-icon"></div>فاکتوری ثبت نشده</div>';
+    return;
+  }
+  
+  document.getElementById('invoicesList').innerHTML = `
+    <table>
+      <thead><tr><th>شماره</th><th>تاریخ</th><th>خریدار</th><th>همکار</th><th>مبلغ فروش</th><th>پرداختی</th><th>مانده</th><th>سود</th><th>وضعیت</th><th>عملیات</th></tr></thead>
+      <tbody>${list.map(i => {
+        const paid = (i.payments||[]).reduce((s,p)=>s+parseNumber(p.amount),0) + (i.checks||[]).filter(c=>c.status==='cashed').reduce((s,c)=>s+parseNumber(c.amount),0);
+        const remaining = i.totalSale - paid;
+        const partnerName = i.partnerId ? getPartyName(i.partnerId) : '—';
+        return `<tr>
+          <td><strong>${i.number}</strong></td>
+          <td>${i.date}</td>
+          <td>${getPartyName(i.customerId)}</td>
+          <td>${partnerName}</td>
+          <td>${formatNumber(i.totalSale)}</td>
+          <td style="color:#2ecc71;">${formatNumber(paid)}</td>
+          <td style="color:${remaining>0?'#f39c12':'#2ecc71'};font-weight:bold;">${formatNumber(remaining)}</td>
+          <td style="color:#2ecc71;">${formatNumber(i.profit)}</td>
+          <td>${statusBadge(i.status)}</td>
+          <td>
+            <button class="btn btn-sm btn-primary" onclick="viewInvoice('${i.id}')">مشاهده</button>
+            <button class="btn btn-sm btn-secondary" onclick="editInvoice('${i.id}')">ویرایش</button>
+            <button class="btn btn-sm btn-danger" onclick="deleteInvoice('${i.id}')">حذف</button>
+          </td>
+        </tr>`;
+      }).join('')}</tbody>
+    </table>`;
+}
+
+async function deleteInvoice(id) {
+  if (!confirm('حذف فاکتور و تمام اسناد مرتبط (خرید، هزینه، چک‌ها)؟')) return;
+  
+  const inv = state.invoices.find(i => i.id === id);
+  if (inv) {
+    const purchases = state.purchases.filter(p => p.invoiceId === id);
+    for (const pur of purchases) {
+      await DB.delete('purchases', pur.id);
+    }
+    
+    const expenses = state.expenses.filter(e => e.invoiceId === id);
+    for (const exp of expenses) {
+      await DB.delete('expenses', exp.id);
+    }
+    
+    const checks = state.checks.filter(c => c.invoiceId === id);
+    for (const chk of checks) {
+      await DB.delete('checks', chk.id);
+    }
+    
+    await DB.delete('invoices', id);
+  }
+  
+  state.invoices = await DB.getAll('invoices');
+  state.purchases = await DB.getAll('purchases');
+  state.expenses = await DB.getAll('expenses');
+  state.checks = await DB.getAll('checks');
+  
+  renderInvoices();
+  showToast('فاکتور و اسناد مرتبط حذف شدند');
+}
+
+function editInvoice(id) {
+  const inv = state.invoices.find(i => i.id === id);
+  if (!inv) return;
+  state.currentInvoice = {
+    items: JSON.parse(JSON.stringify(inv.items)),
+    payments: JSON.parse(JSON.stringify(inv.payments)),
+    checks: JSON.parse(JSON.stringify(inv.checks)),
+    editingId: inv.id,
+    customerId: inv.customerId,
+    partnerId: inv.partnerId,
+    supplierId: inv.supplierId,
+    note: inv.note
+  };
+  showPage('newInvoice');
+  setTimeout(() => {
+    document.getElementById('invCustomer').value = inv.customerId;
+    document.getElementById('invDate').value = inv.date;
+    document.getElementById('invNumber').value = inv.number;
+    document.getElementById('invNote').value = inv.note || '';
+    document.getElementById('invBankAccount').value = inv.bankAccountId || '';
+    document.getElementById('invPartner').value = inv.partnerId || '';
+    document.getElementById('invSupplier').value = inv.supplierId || '';
+    document.getElementById('invDiscountPercent').value = inv.discount ? (inv.subtotal > 0 ? ((inv.discount / inv.subtotal) * 100).toFixed(1) : '0') : '0';
+    document.getElementById('invDiscountAmount').value = '0';
+    document.getElementById('invVat').value = inv.vat > 0 ? '1' : '0';
+    loadCustomerBalance();
+    renderInvoiceItems();
+    renderInvoicePayments();
+  }, 50);
+}
+
+function viewInvoice(id) {
+  const inv = state.invoices.find(i => i.id === id);
+  if (!inv) return;
+  state.currentViewInvoice = inv;
+  const cust = state.parties.find(c => c.id === inv.customerId) || {};
+  const bank = state.bankAccounts.find(b => b.id === inv.bankAccountId);
+  const html = buildInvoiceHTML(inv, cust, state.settings, bank, false);
+  document.getElementById('invoiceViewContent').innerHTML = html;
+  document.getElementById('invoiceViewModal').classList.add('active');
+}
+
+function buildInvoiceHTML(inv, cust, s, bank, forPrint) {
+  const totalPaid = (inv.payments||[]).reduce((x,p)=>x+parseNumber(p.amount),0) + (inv.checks||[]).reduce((x,c)=>x+parseNumber(c.amount),0);
+  const remaining = inv.totalSale - totalPaid;
+  let itemsHtml = inv.items.map((it,idx) => `
+    <tr>
+      <td style="text-align:center;">${idx+1}</td>
+      <td>${it.name}</td>
+      <td style="text-align:center;">${it.qty}</td>
+      <td style="text-align:center;">${it.unit || 'عدد'}</td>
+      <td style="text-align:left;">${formatNumber(it.unitSale)}</td>
+      <td style="text-align:left;">${formatNumber(it.qty*it.unitSale)}</td>
+    </tr>`).join('');
+  
+  let payListHtml = '';
+  if (inv.payments?.length) {
+    payListHtml = `<div style="margin-top:18px;"><strong style="color:#002142;">پرداخت‌های نقدی:</strong>
+      <table style="font-size:10pt;margin-top:8px;">
+        <thead><tr><th>تاریخ</th><th>مبلغ</th><th>روش</th><th>شماره پیگیری</th></tr></thead>
+        <tbody>${inv.payments.map(p => `<tr><td>${p.date}</td><td>${formatNumber(parseNumber(p.amount))}</td><td>${p.method==='cash'?'نقدی':p.method==='card'?'کارت':p.method==='sheba'?'شبا':'انتقال'}</td><td>${p.ref||'—'}</td></tr>`).join('')}</tbody>
+      </table></div>`;
+  }
+  let chkListHtml = '';
+  if (inv.checks?.length) {
+    chkListHtml = `<div style="margin-top:15px;"><strong style="color:#002142;">چک‌ها:</strong>
+      <table style="font-size:10pt;margin-top:8px;">
+        <thead><tr><th>شماره</th><th>بانک</th><th>مبلغ</th><th>سررسید</th><th>صاحب چک</th><th>وضعیت</th></tr></thead>
+        <tbody>${inv.checks.map(c => `<tr><td>${c.number}</td><td>${c.bank}</td><td>${formatNumber(parseNumber(c.amount))}</td><td>${c.dueDate||'—'}</td><td>${c.holder||'—'}</td><td>${c.status==='pending'?'در انتظار':c.status==='cashed'?'وصول شده':'برگشتی'}</td></tr>`).join('')}</tbody>
+      </table></div>`;
+  }
+  
+  const partnerName = inv.partnerId ? getPartyName(inv.partnerId) : '';
+  
+  return `
+    <div class="invoice-preview" id="invoicePreviewContent" style="${forPrint?'':'border:1px solid #ddd;'}">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;border-bottom:3px solid #002142;padding-bottom:15px;margin-bottom:20px;">
+        <div>
+          <img src="https://karavang.ir/wp-content/uploads/2025/10/Karavang-2025-Logo-WB.svg" style="max-height:60px;max-width:150px; filter: brightness(0) invert(1);"><br>
+          <h2 style="margin:5px 0;">${s.companyName || 'کارآونگ'}</h2>
+          <div style="font-size:10pt;color:#555;">${s.phone || ''} ${s.address ? '| '+s.address : ''}</div>
+        </div>
+        <div style="text-align:left;">
+          <h1 style="color:#002142;margin:0;">فاکتور فروش</h1>
+          <div style="margin-top:8px;font-size:11pt;">
+            <div><strong>شماره:</strong> ${inv.number}</div>
+            <div><strong>تاریخ:</strong> ${inv.date}</div>
+            ${partnerName ? `<div><strong>کارشناس فروش:</strong> ${partnerName}</div>` : ''}
+          </div>
+        </div>
+      </div>
+      <div style="background:#f5f5f5;padding:12px;border-radius:6px;margin-bottom:20px;display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:11pt;">
+        <div><strong>خریدار:</strong> ${cust.name || '—'}</div>
+        <div><strong>تماس:</strong> ${cust.phone || '—'}</div>
+        <div style="grid-column:1/-1;"><strong>آدرس:</strong> ${cust.address || '—'}</div>
+      </div>
+      <table style="width:100%;border-collapse:collapse;">
+        <thead>
+          <tr>
+            <th style="padding:10px;background:#002142;color:#fff;width:40px;">ردیف</th>
+            <th style="padding:10px;background:#002142;color:#fff;">شرح کالا/خدمات</th>
+            <th style="padding:10px;background:#002142;color:#fff;width:60px;">تعداد</th>
+            <th style="padding:10px;background:#002142;color:#fff;width:70px;">واحد</th>
+            <th style="padding:10px;background:#002142;color:#fff;width:110px;">فی (تومان)</th>
+            <th style="padding:10px;background:#002142;color:#fff;width:130px;">جمع (تومان)</th>
+          </tr>
+        </thead>
+        <tbody>${itemsHtml}</tbody>
+        <tfoot>
+          <tr style="background:#f5f5f5;font-weight:bold;">
+            <td colspan="5" style="padding:10px;text-align:left;">جمع سطرها:</td>
+            <td style="padding:10px;text-align:left;">${formatNumber(inv.subtotal)} تومان</td>
+          </tr>
+          ${inv.discount>0?`<tr style="background:#fff8e1;"><td colspan="5" style="padding:10px;text-align:left;">تخفیف:</td><td style="padding:10px;text-align:left;color:#e74c3c;">${formatNumber(inv.discount)} تومان</td></tr>`:''}
+          ${inv.vat>0?`<tr style="background:#e8f5e9;"><td colspan="5" style="padding:10px;text-align:left;">ارزش افزوده (10%):</td><td style="padding:10px;text-align:left;">${formatNumber(inv.vat)} تومان</td></tr>`:''}
+          <tr style="background:#002142;color:#fff;font-weight:bold;font-size:12pt;">
+            <td colspan="5" style="padding:12px;text-align:left;">مبلغ خالص قابل پرداخت:</td>
+            <td style="padding:12px;text-align:left;">${formatNumber(inv.totalSale)} تومان</td>
+          </tr>
+        </tfoot>
+      </table>
+      ${payListHtml}
+      ${chkListHtml}
+      ${bank ? `
+      <div style="margin-top:20px;padding:12px;border:1px dashed #999;border-radius:6px;font-size:10pt;">
+        <strong>💳 اطلاعات واریز:</strong> ${bank.name} | کارت: ${bank.card||'—'} | شبا: ${bank.iban||'—'} | به نام: ${bank.holder||'—'}
+      </div>` : ''}
+      ${inv.note ? `<div style="margin-top:15px;padding:10px;background:#fff8e1;border-right:4px solid #f39c12;font-size:10pt;"><strong>یادداشت:</strong> ${inv.note}</div>` : ''}
+      <div style="margin-top:40px;display:flex;justify-content:space-between;font-size:10pt;">
+        <div>مهر و امضای فروشنده</div>
+        <div>مهر و امضای خریدار</div>
+      </div>
+    </div>`;
+}
+
+function printInvoice() {
+  const inv = state.currentViewInvoice;
+  if (!inv) return;
+  const cust = state.parties.find(c => c.id === inv.customerId) || {};
+  const bank = state.bankAccounts.find(b => b.id === inv.bankAccountId);
+  const html = buildInvoiceHTML(inv, cust, state.settings, bank, true);
+  const pa = document.getElementById('printArea');
+  pa.innerHTML = html;
+  pa.style.display = 'block';
+  const custName = (cust.name || 'customer').replace(/[^\w\u0600-\u06FF]/g, '_');
+  const oldTitle = document.title;
+  document.title = `${custName}_${inv.number}`;
+  setTimeout(() => {
+    window.print();
+    setTimeout(() => {
+      pa.style.display = 'none';
+      pa.innerHTML = '';
+      document.title = oldTitle;
+    }, 500);
+  }, 200);
+}
+
+async function takeScreenshot() {
+  const element = document.getElementById('invoicePreviewContent');
+  if (!element) {
+    showToast('المان فاکتور پیدا نشد', 'error');
+    return;
+  }
+  
+  showToast('در حال تهیه اسکرین‌شات...');
+  
+  try {
+    const canvas = await html2canvas(element, {
+      scale: 2,
+      backgroundColor: '#ffffff',
+      useCORS: true,
+      logging: false
+    });
+    
+    const link = document.createElement('a');
+    link.download = `invoice_${state.currentViewInvoice.number}.png`;
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+    
+    showToast('اسکرین‌شات ذخیره شد - آماده ارسال در شبکه‌های اجتماعی');
+  } catch (err) {
+    console.error('Screenshot error:', err);
+    showToast('خطا در تهیه اسکرین‌شات', 'error');
+  }
+}
+
+// فاکتورهای خرید
+async function renderPurchases() {
+  const q = (document.getElementById('purchaseSearch')?.value || '').toLowerCase();
+  let list = state.purchases.filter(p => !q || p.number.toLowerCase().includes(q) || getPartyName(p.supplierId).toLowerCase().includes(q))
+    .sort((a,b) => b.createdAt - a.createdAt);
+  
+  if (list.length === 0) {
+    document.getElementById('purchasesList').innerHTML = '<div class="empty-state"><div class="empty-state-icon">🛒</div>فاکتور خریدی ثبت نشده</div>';
+    return;
+  }
+  
+  document.getElementById('purchasesList').innerHTML = `
+    <table>
+      <thead><tr><th>شماره</th><th>تاریخ</th><th>تأمین‌کننده</th><th>مبلغ خرید</th><th>پرداختی</th><th>مانده</th><th>وضعیت</th><th>عملیات</th></tr></thead>
+      <tbody>${list.map(p => {
+        const paid = (p.payments||[]).reduce((s,py)=>s+parseNumber(py.amount),0);
+        const remaining = p.totalPurchase - paid;
+        return `<tr>
+          <td><strong>${p.number}</strong></td>
+          <td>${p.date}</td>
+          <td>${getPartyName(p.supplierId)}</td>
+          <td>${formatNumber(p.totalPurchase)}</td>
+          <td style="color:#2ecc71;">${formatNumber(paid)}</td>
+          <td style="color:${remaining>0?'#f39c12':'#2ecc71'};font-weight:bold;">${formatNumber(remaining)}</td>
+          <td>${statusBadge(p.status)}</td>
+          <td>
+            <button class="btn btn-sm btn-secondary" onclick="openPurchasePaymentModal('${p.id}')">پرداخت</button>
+            <button class="btn btn-sm btn-danger" onclick="deletePurchase('${p.id}')">حذف</button>
+          </td>
+        </tr>`;
+      }).join('')}</tbody>
+    </table>`;
+}
+
+async function deletePurchase(id) {
+  if (!confirm('حذف فاکتور خرید؟')) return;
+  await DB.delete('purchases', id);
+  state.purchases = await DB.getAll('purchases');
+  renderPurchases();
+}
+
+function openPurchasePaymentModal(purId) {
+  state.editingPurchaseId = purId;
+  document.getElementById('purPayAmount').value = '';
+  document.getElementById('purPayDate').value = Jalaali.todayFormatted();
+  document.getElementById('purPayMethod').value = 'cash';
+  document.getElementById('purPayDesc').value = '';
+  document.getElementById('purchasePaymentModal').classList.add('active');
+}
+
+async function savePurchasePayment() {
+  const amount = parseNumber(document.getElementById('purPayAmount').value);
+  if (!amount) { showToast('مبلغ الزامی است', 'error'); return; }
+  const pur = state.purchases.find(p => p.id === state.editingPurchaseId);
+  if (!pur) return;
+  if (!pur.payments) pur.payments = [];
+  pur.payments.push({
+    id: uid(),
+    amount: amount,
+    date: document.getElementById('purPayDate').value,
+    method: document.getElementById('purPayMethod').value,
+    desc: document.getElementById('purPayDesc').value,
+    createdAt: Date.now()
+  });
+  const totalPaid = pur.payments.reduce((s,py) => s + parseNumber(py.amount), 0);
+  pur.status = totalPaid >= pur.totalPurchase ? 'paid' : 'partial';
+  await DB.put('purchases', pur);
+  state.purchases = await DB.getAll('purchases');
+  closeModal('purchasePaymentModal');
+  renderPurchases();
+  showToast('پرداخت ثبت شد');
+}
+
+// اسناد هزینه
+async function renderExpenses() {
+  const list = [...state.expenses].sort((a,b) => b.createdAt - a.createdAt);
+  if (list.length === 0) {
+    document.getElementById('expensesList').innerHTML = '<div class="empty-state"><div class="empty-state-icon">💰</div>سند هزینه‌ای ثبت نشده</div>';
+    return;
+  }
+  const total = list.reduce((s,e) => s + (e.amount||0), 0);
+  document.getElementById('expensesList').innerHTML = `
+    <div class="stats-grid" style="margin-bottom:20px;">
+      <div class="stat-card" style="border-right-color:#e74c3c;">
+        <div class="stat-label">مجموع هزینه‌ها</div>
+        <div class="stat-value">${formatNumber(total)}</div>
+        <div class="stat-sub">تومان</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">تعداد اسناد</div>
+        <div class="stat-value">${list.length}</div>
+      </div>
+    </div>
+    <table>
+      <thead><tr><th>شماره</th><th>تاریخ</th><th>شرح</th><th>مبلغ</th><th>عملیات</th></tr></thead>
+      <tbody>${list.map(e => `<tr>
+        <td><strong>${e.number}</strong></td>
+        <td>${e.date}</td>
+        <td>${e.description}</td>
+        <td style="color:#e74c3c;font-weight:bold;">${formatNumber(e.amount)}</td>
+        <td><button class="btn btn-sm btn-danger" onclick="deleteExpense('${e.id}')">حذف</button></td>
+      </tr>`).join('')}</tbody>
+    </table>`;
+}
+
+async function deleteExpense(id) {
+  if (!confirm('حذف سند هزینه؟')) return;
+  await DB.delete('expenses', id);
+  state.expenses = await DB.getAll('expenses');
+  renderExpenses();
+}
+
+// پرداخت‌ها و چک‌ها
+function showPaymentTab(tab) {
+  document.querySelectorAll('#payments .tab').forEach(x => x.classList.remove('active'));
+  document.querySelectorAll('#payments .tab-content').forEach(x => x.classList.remove('active'));
+  document.querySelector(`#payments .tab[data-tab="${tab}"]`).classList.add('active');
+  document.getElementById(tab + 'Tab').classList.add('active');
+}
+
+function renderPayments() {
+  let received = [];
+  state.invoices.forEach(inv => {
+    (inv.payments||[]).forEach(p => {
+      received.push({...p, invoiceNumber: inv.number, customerId: inv.customerId, type: 'received'});
+    });
+  });
+  let paid = [];
+  state.purchases.forEach(pur => {
+    (pur.payments||[]).forEach(p => {
+      paid.push({...p, invoiceNumber: pur.number, supplierId: pur.supplierId, type: 'paid'});
+    });
+  });
+  const checks = [...state.checks];
+  
+  const totalReceived = received.reduce((s,p) => s + parseNumber(p.amount), 0);
+  const totalPaid = paid.reduce((s,p) => s + parseNumber(p.amount), 0);
+  const pendingChecks = checks.filter(c => c.status === 'pending').reduce((s,c) => s + parseNumber(c.amount), 0);
+  
+  document.getElementById('receivedTab').innerHTML = `
+    <div class="stats-grid" style="margin-bottom:20px;">
+      <div class="stat-card" style="border-right-color:#27ae60;">
+        <div class="stat-label">مجموع دریافتی</div>
+        <div class="stat-value" style="color:#2ecc71;">${formatNumber(totalReceived)}</div>
+        <div class="stat-sub">تومان</div>
+      </div>
+    </div>
+    ${received.length === 0 ? '<div class="empty-state">دریافتی ثبت نشده</div>' : `
+    <table>
+      <thead><tr><th>تاریخ</th><th>فاکتور</th><th>خریدار</th><th>مبلغ</th><th>روش</th><th>شماره پیگیری</th><th>شرح</th></tr></thead>
+      <tbody>${received.map(p => `<tr>
+        <td>${p.date}</td><td>${p.invoiceNumber}</td><td>${getPartyName(p.customerId)}</td>
+        <td style="color:#2ecc71;font-weight:bold;">${formatNumber(parseNumber(p.amount))}</td>
+        <td>${p.method==='cash'?'نقدی':p.method==='card'?'کارت':p.method==='sheba'?'شبا':'انتقال'}</td>
+        <td>${p.ref||'—'}</td><td>${p.desc||'—'}</td>
+      </tr>`).join('')}</tbody>
+    </table>`}`;
+  
+  document.getElementById('paidTab').innerHTML = `
+    <div class="stats-grid" style="margin-bottom:20px;">
+      <div class="stat-card" style="border-right-color:#e74c3c;">
+        <div class="stat-label">مجموع پرداختی</div>
+        <div class="stat-value">${formatNumber(totalPaid)}</div>
+        <div class="stat-sub">تومان</div>
+      </div>
+    </div>
+    ${paid.length === 0 ? '<div class="empty-state">پرداختی ثبت نشده</div>' : `
+    <table>
+      <thead><tr><th>تاریخ</th><th>فاکتور</th><th>تأمین‌کننده</th><th>مبلغ</th><th>روش</th><th>شرح</th></tr></thead>
+      <tbody>${paid.map(p => `<tr>
+        <td>${p.date}</td><td>${p.invoiceNumber}</td><td>${getPartyName(p.supplierId)}</td>
+        <td style="color:#e74c3c;font-weight:bold;">${formatNumber(parseNumber(p.amount))}</td>
+        <td>${p.method==='cash'?'نقدی':p.method==='card'?'کارت':p.method==='sheba'?'شبا':p.method==='check'?'چک':'انتقال'}</td>
+        <td>${p.desc||'—'}</td>
+      </tr>`).join('')}</tbody>
+    </table>`}`;
+  
+  document.getElementById('checksTab').innerHTML = `
+    <div class="stats-grid" style="margin-bottom:20px;">
+      <div class="stat-card" style="border-right-color:#f39c12;">
+        <div class="stat-label">چک‌های در انتظار وصول</div>
+        <div class="stat-value">${formatNumber(pendingChecks)}</div>
+        <div class="stat-sub">تومان</div>
+      </div>
+    </div>
+    ${checks.length === 0 ? '<div class="empty-state">چکی ثبت نشده</div>' : `
+    <table>
+      <thead><tr><th>شماره</th><th>بانک</th><th>مبلغ</th><th>سررسید</th><th>صاحب چک</th><th>فاکتور</th><th>وضعیت</th><th>عملیات</th></tr></thead>
+      <tbody>${checks.map(c => {
+        const inv = state.invoices.find(i => i.id === c.invoiceId);
+        return `<tr>
+          <td>${c.number}</td><td>${c.bank}</td>
+          <td style="font-weight:bold;">${formatNumber(parseNumber(c.amount))}</td>
+          <td>${c.dueDate||'—'}</td><td>${c.holder||'—'}</td>
+          <td>${inv?inv.number:'—'}</td>
+          <td>${statusBadge(c.status)}</td>
+          <td>
+            <select onchange="updateCheckStatus('${c.id}',this.value)" style="padding:5px;background:rgba(15,20,30,0.6);border:1px solid rgba(198,169,97,0.25);border-radius:6px;color:#e6e6e6;font-family:inherit;font-size:11px;">
+              <option value="pending" ${c.status==='pending'?'selected':''}>در انتظار</option>
+              <option value="cashed" ${c.status==='cashed'?'selected':''}>وصول شده</option>
+              <option value="bounced" ${c.status==='bounced'?'selected':''}>برگشتی</option>
+            </select>
+            <button class="btn btn-sm btn-danger" onclick="deleteCheck('${c.id}')">×</button>
+          </td>
+        </tr>`;
+      }).join('')}</tbody>
+    </table>`}`;
+}
+
+async function updateCheckStatus(id, status) {
+  const c = state.checks.find(x => x.id === id);
+  if (!c) return;
+  c.status = status;
+  await DB.put('checks', c);
+  state.checks = await DB.getAll('checks');
+  if (c.invoiceId) {
+    const inv = state.invoices.find(i => i.id === c.invoiceId);
+    if (inv) {
+      const totalPaid = (inv.payments||[]).reduce((s,p)=>s+parseNumber(p.amount),0) + (inv.checks||[]).reduce((s,ch)=>ch.status==='cashed'?s+parseNumber(ch.amount):s,0);
+      if (totalPaid >= inv.totalSale) inv.status = 'paid';
+      else if (totalPaid > 0) inv.status = 'partial';
+      await DB.put('invoices', inv);
+      state.invoices = await DB.getAll('invoices');
+    }
+  }
+  showToast('وضعیت چک بروزرسانی شد');
+  renderPayments();
+}
+
+async function deleteCheck(id) {
+  if (!confirm('حذف چک؟')) return;
+  await DB.delete('checks', id);
+  state.checks = await DB.getAll('checks');
+  renderPayments();
+}
+
+// گزارشات
+function renderReports() {
+  const sel = document.getElementById('reportCustomer');
+  const customers = state.parties.filter(p => p.type === 'customer');
+  sel.innerHTML = '<option value="">همه</option>' + customers.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+  
+  applyReportFilter();
+}
+
+function applyReportFilter() {
+  const fromDate = document.getElementById('reportFromDate').value;
+  const toDate = document.getElementById('reportToDate').value;
+  const customerId = document.getElementById('reportCustomer').value;
+  
+  let filtered = [...state.invoices];
+  if (fromDate) filtered = filtered.filter(i => Jalaali.compare(i.date, fromDate) >= 0);
+  if (toDate) filtered = filtered.filter(i => Jalaali.compare(i.date, toDate) <= 0);
+  if (customerId) filtered = filtered.filter(i => i.customerId === customerId);
+  
+  const totalSale = filtered.reduce((s,i) => s + (i.totalSale||0), 0);
+  const totalCost = filtered.reduce((s,i) => s + (i.totalPurchase||0), 0);
+  const totalProfit = totalSale - totalCost;
+  const profitPercent = totalSale > 0 ? ((totalProfit / totalSale) * 100).toFixed(1) : 0;
+  const totalReceived = filtered.reduce((s,i) => s + (i.payments||[]).reduce((x,p)=>x+parseNumber(p.amount),0) + (i.checks||[]).filter(c=>c.status==='cashed').reduce((x,c)=>x+parseNumber(c.amount),0), 0);
+  
+  document.getElementById('reportStats').innerHTML = `
+    <div class="stat-card">
+      <div class="stat-label">جمع فروش (دوره)</div>
+      <div class="stat-value">${formatNumber(totalSale)}</div>
+    </div>
+    <div class="stat-card" style="border-right-color:#e74c3c;">
+      <div class="stat-label">جمع هزینه (دوره)</div>
+      <div class="stat-value">${formatNumber(totalCost)}</div>
+    </div>
+    <div class="stat-card" style="border-right-color:#27ae60;">
+      <div class="stat-label">سود خالص (دوره)</div>
+      <div class="stat-value" style="color:#2ecc71;">${formatNumber(totalProfit)}</div>
+      <div class="stat-sub">${profitPercent}% از فروش</div>
+    </div>
+    <div class="stat-card" style="border-right-color:#3498db;">
+      <div class="stat-label">دریافتی خالص (دوره)</div>
+      <div class="stat-value">${formatNumber(totalReceived)}</div>
+    </div>
+  `;
+  
+  renderSalesChart(filtered);
+  
+  if (filtered.length === 0) {
+    document.getElementById('reportDetails').innerHTML = '<div class="empty-state">فاکتوری در این بازه یافت نشد</div>';
+  } else {
+    document.getElementById('reportDetails').innerHTML = `
+      <table>
+        <thead><tr><th>شماره</th><th>تاریخ</th><th>خریدار</th><th>فروش</th><th>خرید</th><th>سود</th><th>دریافتی</th></tr></thead>
+        <tbody>${filtered.map(i => {
+          const rec = (i.payments||[]).reduce((x,p)=>x+parseNumber(p.amount),0) + (i.checks||[]).filter(c=>c.status==='cashed').reduce((x,c)=>x+parseNumber(c.amount),0);
+          return `<tr><td>${i.number}</td><td>${i.date}</td><td>${getPartyName(i.customerId)}</td><td>${formatNumber(i.totalSale)}</td><td>${formatNumber(i.totalPurchase)}</td><td style="color:#2ecc71;">${formatNumber(i.profit)}</td><td>${formatNumber(rec)}</td></tr>`;
+        }).join('')}</tbody>
+      </table>`;
+  }
+}
+
+function resetReportFilter() {
+  document.getElementById('reportFromDate').value = '';
+  document.getElementById('reportToDate').value = '';
+  document.getElementById('reportCustomer').value = '';
+  applyReportFilter();
+}
+
+function renderSalesChart(data) {
+  const svg = document.getElementById('salesChart');
+  if (data.length === 0) {
+    svg.innerHTML = '<text x="400" y="160" text-anchor="middle" fill="#666" font-size="14" font-family="Vazir">داده‌ای برای نمایش وجود ندارد</text>';
+    return;
+  }
+  
+  const grouped = {};
+  data.forEach(i => {
+    if (!grouped[i.date]) grouped[i.date] = {sale:0, cost:0, profit:0};
+    grouped[i.date].sale += i.totalSale || 0;
+    grouped[i.date].cost += i.totalPurchase || 0;
+    grouped[i.date].profit += i.profit || 0;
+  });
+  
+  const dates = Object.keys(grouped).sort();
+  const maxVal = Math.max(...dates.map(d => Math.max(grouped[d].sale, grouped[d].cost, grouped[d].profit))) || 1;
+  
+  const w = 800, h = 320;
+  const padding = {top: 30, right: 30, bottom: 50, left: 70};
+  const chartW = w - padding.left - padding.right;
+  const chartH = h - padding.top - padding.bottom;
+  const barWidth = Math.min(60, chartW / dates.length / 3 - 5);
+  
+  let svgContent = `
+    <defs>
+      <linearGradient id="saleGrad" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#c6a961"/>
+        <stop offset="100%" stop-color="#8a7340"/>
+      </linearGradient>
+      <linearGradient id="costGrad" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#e74c3c"/>
+        <stop offset="100%" stop-color="#922b21"/>
+      </linearGradient>
+      <linearGradient id="profitGrad" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#2ecc71"/>
+        <stop offset="100%" stop-color="#1e8449"/>
+      </linearGradient>
+    </defs>
+    <rect width="${w}" height="${h}" fill="transparent"/>
+  `;
+  
+  for (let i = 0; i <= 4; i++) {
+    const y = padding.top + (chartH / 4) * i;
+    const val = maxVal - (maxVal / 4) * i;
+    svgContent += `<line x1="${padding.left}" y1="${y}" x2="${w-padding.right}" y2="${y}" stroke="rgba(198,169,97,0.15)" stroke-dasharray="3,3"/>`;
+    svgContent += `<text x="${padding.left-10}" y="${y+5}" text-anchor="end" fill="#888" font-size="10" font-family="Vazir">${formatNumber(val)}</text>`;
+  }
+  
+  const groupWidth = chartW / dates.length;
+  dates.forEach((date, idx) => {
+    const x = padding.left + groupWidth * idx + groupWidth/2;
+    const d = grouped[date];
+    const saleH = (d.sale / maxVal) * chartH;
+    const costH = (d.cost / maxVal) * chartH;
+    const profitH = (d.profit / maxVal) * chartH;
+    
+    svgContent += `<rect x="${x - barWidth*1.5 - 2}" y="${padding.top + chartH - saleH}" width="${barWidth}" height="${saleH}" fill="url(#saleGrad)" rx="3"/>`;
+    svgContent += `<rect x="${x - barWidth/2}" y="${padding.top + chartH - costH}" width="${barWidth}" height="${costH}" fill="url(#costGrad)" rx="3"/>`;
+    svgContent += `<rect x="${x + barWidth/2 + 2}" y="${padding.top + chartH - profitH}" width="${barWidth}" height="${profitH}" fill="url(#profitGrad)" rx="3"/>`;
+    
+    svgContent += `<text x="${x}" y="${h - padding.bottom + 20}" text-anchor="middle" fill="#aaa" font-size="10" font-family="Vazir">${date.slice(5)}</text>`;
+  });
+  
+  svg.innerHTML = svgContent;
+}
+
+// تنظیمات
+function showSettingsTab(tab) {
+  document.querySelectorAll('#settings .tab').forEach(x => x.classList.remove('active'));
+  document.querySelectorAll('#settings .tab-content').forEach(x => x.classList.remove('active'));
+  document.querySelector(`#settings .tab[data-tab="${tab}"]`).classList.add('active');
+  document.getElementById('settings' + tab.charAt(0).toUpperCase() + tab.slice(1)).classList.add('active');
+}
+
+async function loadSettings() {
+  document.getElementById('setCompanyName').value = state.settings.companyName || '';
+  document.getElementById('setPhone').value = state.settings.phone || '';
+  document.getElementById('setAddress').value = state.settings.address || '';
+  renderBankAccounts();
+  document.getElementById('backupParties').textContent = state.parties.length;
+  document.getElementById('backupInvoices').textContent = state.invoices.length;
+  document.getElementById('backupChecks').textContent = state.checks.length;
+  const lastB = localStorage.getItem('lastBackup');
+  document.getElementById('lastBackup').textContent = lastB || '—';
+}
+
+async function saveSettings() {
+  state.settings = {
+    companyName: document.getElementById('setCompanyName').value,
+    phone: document.getElementById('setPhone').value,
+    address: document.getElementById('setAddress').value
+  };
+  await DB.put('settings', {key:'company', ...state.settings});
+  showToast('تنظیمات ذخیره شد');
+}
+
+function openBankModal(id = null) {
+  state.editingBankId = id;
+  document.getElementById('bankModalTitle').textContent = id ? 'ویرایش حساب بانکی' : 'حساب بانکی جدید';
+  if (id) {
+    const b = state.bankAccounts.find(x => x.id === id);
+    document.getElementById('bnkName').value = b.name || '';
+    document.getElementById('bnkCard').value = b.card || '';
+    document.getElementById('bnkAccount').value = b.account || '';
+    document.getElementById('bnkIban').value = b.iban || '';
+    document.getElementById('bnkHolder').value = b.holder || '';
+  } else {
+    ['bnkName','bnkCard','bnkAccount','bnkIban','bnkHolder'].forEach(i => document.getElementById(i).value = '');
+  }
+  document.getElementById('bankModal').classList.add('active');
+}
+
+async function saveBank() {
+  const name = document.getElementById('bnkName').value.trim();
+  if (!name) { showToast('نام بانک الزامی است', 'error'); return; }
+  const data = {
+    id: state.editingBankId || uid(),
+    name,
+    card: document.getElementById('bnkCard').value,
+    account: document.getElementById('bnkAccount').value,
+    iban: document.getElementById('bnkIban').value,
+    holder: document.getElementById('bnkHolder').value,
+    createdAt: Date.now()
+  };
+  await DB.put('bankAccounts', data);
+  state.bankAccounts = await DB.getAll('bankAccounts');
+  closeModal('bankModal');
+  renderBankAccounts();
+  showToast('حساب بانکی ذخیره شد');
+}
+
+async function deleteBank(id) {
+  if (!confirm('حذف حساب بانکی؟')) return;
+  await DB.delete('bankAccounts', id);
+  state.bankAccounts = await DB.getAll('bankAccounts');
+  renderBankAccounts();
+}
+
+function renderBankAccounts() {
+  const c = document.getElementById('bankAccountsList');
+  if (state.bankAccounts.length === 0) {
+    c.innerHTML = '<div class="empty-state">حساب بانکی ثبت نشده</div>';
+    return;
+  }
+  c.innerHTML = state.bankAccounts.map(b => `
+    <div class="bank-account-item">
+      <div class="bank-account-info">
+        <strong>${b.name}</strong>
+        <span>کارت: ${b.card||'—'}</span>
+        <span>حساب: ${b.account||'—'}</span>
+        <span>شبا: ${b.iban||'—'}</span>
+        <span>صاحب: ${b.holder||'—'}</span>
+      </div>
+      <div>
+        <button class="btn btn-sm btn-secondary" onclick="openBankModal('${b.id}')">ویرایش</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteBank('${b.id}')">حذف</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+// پشتیبان‌گیری
+function exportData() {
+  const data = {
+    version: '2.1',
+    exportDate: new Date().toISOString(),
+    parties: state.parties,
+    invoices: state.invoices,
+    purchases: state.purchases,
+    expenses: state.expenses,
+    payments: state.payments,
+    checks: state.checks,
+    bankAccounts: state.bankAccounts,
+    settings: state.settings
+  };
+  const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `karavang_backup_${Jalaali.todayFormatted().replace(/\//g,'-')}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  localStorage.setItem('lastBackup', Jalaali.todayFormatted() + ' - ' + new Date().toLocaleTimeString('fa-IR'));
+  showToast('فایل پشتیبان دانلود شد');
+}
+
+async function importData(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  if (!confirm('داده‌های فعلی با داده‌های فایل جایگزین می‌شوند. ادامه می‌دهید؟')) return;
+  const reader = new FileReader();
+  reader.onload = async e => {
+    try {
+      const data = JSON.parse(e.target.result);
+      await DB.clear('parties');
+      await DB.clear('invoices');
+      await DB.clear('purchases');
+      await DB.clear('expenses');
+      await DB.clear('payments');
+      await DB.clear('checks');
+      await DB.clear('bankAccounts');
+      for (const p of (data.parties||[])) await DB.put('parties', p);
+      for (const i of (data.invoices||[])) await DB.put('invoices', i);
+      for (const p of (data.purchases||[])) await DB.put('purchases', p);
+      for (const e of (data.expenses||[])) await DB.put('expenses', e);
+      for (const p of (data.payments||[])) await DB.put('payments', p);
+      for (const c of (data.checks||[])) await DB.put('checks', c);
+      for (const b of (data.bankAccounts||[])) await DB.put('bankAccounts', b);
+      if (data.settings) await DB.put('settings', {key:'company', ...data.settings});
+      state.parties = await DB.getAll('parties');
+      state.invoices = await DB.getAll('invoices');
+      state.purchases = await DB.getAll('purchases');
+      state.expenses = await DB.getAll('expenses');
+      state.payments = await DB.getAll('payments');
+      state.checks = await DB.getAll('checks');
+      state.bankAccounts = await DB.getAll('bankAccounts');
+      const s = await DB.get('settings', 'company');
+      if (s) state.settings = {...state.settings, ...s};
+      showToast('داده‌ها با موفقیت بازیابی شد');
+      renderDashboard();
+    } catch (err) {
+      showToast('خطا در خواندن فایل', 'error');
+    }
+  };
+  reader.readAsText(file);
+  event.target.value = '';
+}
+
+async function clearAllData() {
+  if (!confirm('تمام داده‌ها پاک می‌شوند! مطمئنید؟')) return;
+  if (!confirm('این عمل غیرقابل بازگشت است. واقعاً مطمئنید؟')) return;
+  await DB.clear('parties');
+  await DB.clear('invoices');
+  await DB.clear('purchases');
+  await DB.clear('expenses');
+  await DB.clear('payments');
+  await DB.clear('checks');
+  await DB.clear('bankAccounts');
+  state.parties = [];
+  state.invoices = [];
+  state.purchases = [];
+  state.expenses = [];
+  state.payments = [];
+  state.checks = [];
+  state.bankAccounts = [];
+  showToast('تمام داده‌ها پاک شد');
+  renderDashboard();
+}
+
+// پس‌زمینه متحرک
+function initBackground() {
+  const canvas = document.getElementById('bgCanvas');
+  const ctx = canvas.getContext('2d');
+  let width, height;
+  const particles = [];
+  const colors = ['#c6a961', '#e74c3c', '#3498db', '#2ecc71', '#9b59b6', '#f39c12'];
+  
+  function resize() {
+    width = canvas.width = window.innerWidth;
+    height = canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+  
+  for (let i = 0; i < 35; i++) {
+    particles.push({
+      x: Math.random() * width,
+      y: Math.random() * height,
+      vx: (Math.random() - 0.5) * 0.4,
+      vy: (Math.random() - 0.5) * 0.4,
+      r: 80 + Math.random() * 150,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      alpha: 0.15 + Math.random() * 0.2
+    });
+  }
+  
+  function animate() {
+    ctx.clearRect(0, 0, width, height);
+    particles.forEach(p => {
+      p.x += p.vx;
+      p.y += p.vy;
+      if (p.x < -p.r) p.x = width + p.r;
+      if (p.x > width + p.r) p.x = -p.r;
+      if (p.y < -p.r) p.y = height + p.r;
+      if (p.y > height + p.r) p.y = -p.r;
+      
+      const grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r);
+      grad.addColorStop(0, p.color + Math.floor(p.alpha * 255).toString(16).padStart(2,'0'));
+      grad.addColorStop(1, p.color + '00');
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fill();
+    });
+    requestAnimationFrame(animate);
+  }
+  animate();
+}
+
+// پشتیبان‌گیری خودکار روزانه
+function setupAutoBackup() {
+  const lastBackup = localStorage.getItem('lastAutoBackup');
+  const today = Jalaali.todayFormatted();
+  if (lastBackup !== today && state.invoices.length > 0) {
+    setTimeout(() => {
+      if (confirm('پشتیبان‌گیری خودکار روزانه: آیا می‌خواهید از داده‌ها خروجی JSON بگیرید؟')) {
+        exportData();
+        localStorage.setItem('lastAutoBackup', today);
+      }
+    }, 3000);
+  }
+}
+
+// شروع برنامه
+window.addEventListener('DOMContentLoaded', async () => {
+  try {
+    await DB.init();
+    state.parties = await DB.getAll('parties');
+    state.invoices = await DB.getAll('invoices');
+    state.purchases = await DB.getAll('purchases');
+    state.expenses = await DB.getAll('expenses');
+    state.payments = await DB.getAll('payments');
+    state.checks = await DB.getAll('checks');
+    state.bankAccounts = await DB.getAll('bankAccounts');
+    const s = await DB.get('settings', 'company');
+    if (s) state.settings = {...state.settings, ...s};
+    
+    initBackground();
+    renderDashboard();
+    setupAutoBackup();
+    console.log('✅ کارآونگ با موفقیت بارگذاری شد');
+  } catch (err) {
+    console.error('❌ خطا در بارگذاری:', err);
+    showToast('خطا در بارگذاری برنامه', 'error');
+  }
+});
+</script>
+</body>
+</html>
