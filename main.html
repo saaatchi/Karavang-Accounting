@@ -6,6 +6,20 @@
 <title>کارآونگ - سیستم حسابداری فروش</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
+:root {
+  --primary-color: #c6a961;
+  --primary-light: #d4ba72;
+  --bg-dark: #0a0e1a;
+  --bg-panel: rgba(26, 31, 46, 0.6);
+  --bg-input: rgba(15, 20, 30, 0.6);
+  --border-color: rgba(198, 169, 97, 0.2);
+  --text-primary: #e6e6e6;
+  --text-secondary: #b0b0b0;
+  --text-muted: #888;
+  --success: rgba(39, 174, 96, 0.8);
+  --danger: rgba(192, 57, 43, 0.8);
+  --sidebar-width: 260px;
+}
 @font-face {
   font-family: 'Vazir';
   src: url('https://cdn.jsdelivr.net/gh/rastikerdar/vazir-font@v30.1.0/dist/Vazir-Regular.woff2') format('woff2');
@@ -22,8 +36,8 @@
 html, body { height: 100%; }
 body {
   font-family: 'iransansxfanum', 'Vazir', Tahoma, sans-serif;
-  background: #0a0e1a;
-  color: #e6e6e6;
+  background: var(--bg-dark);
+  color: var(--text-primary);
   direction: rtl;
   font-size: 14px;
   overflow-x: hidden;
@@ -36,6 +50,7 @@ body {
   z-index: 0;
   filter: blur(60px);
   opacity: 0.5;
+  will-change: transform;
 }
 .app {
   display: flex;
@@ -44,11 +59,11 @@ body {
   z-index: 1;
 }
 .sidebar {
-  width: 260px;
+  width: var(--sidebar-width);
   background: rgba(20, 25, 40, 0.7);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border-left: 1px solid rgba(198, 169, 97, 0.25);
+  border-left: 1px solid var(--border-color);
   padding: 20px 0;
   position: fixed;
   right: 0;
@@ -56,6 +71,7 @@ body {
   height: 100vh;
   overflow-y: auto;
   z-index: 100;
+  contain: layout style;
 }
 .logo {
   padding: 0 20px 20px;
@@ -76,7 +92,7 @@ body {
   cursor: pointer;
   color: #b0b0b0;
   border-right: 3px solid transparent;
-  transition: all 0.25s;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -127,18 +143,31 @@ body {
   color: #1a1f2e;
   font-weight: bold;
   box-shadow: 0 4px 12px rgba(198, 169, 97, 0.3);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
-.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(198, 169, 97, 0.5); }
+.btn-primary:hover { 
+  transform: translateY(-2px); 
+  box-shadow: 0 6px 16px rgba(198, 169, 97, 0.5); 
+}
 .btn-secondary {
   background: rgba(42, 49, 66, 0.6);
   color: #e6e6e6;
   border: 1px solid rgba(198, 169, 97, 0.3);
   backdrop-filter: blur(10px);
+  transition: background 0.2s ease;
 }
 .btn-secondary:hover { background: rgba(53, 61, 84, 0.8); }
-.btn-danger { background: rgba(192, 57, 43, 0.8); color: #fff; }
+.btn-danger { 
+  background: rgba(192, 57, 43, 0.8); 
+  color: #fff; 
+  transition: background 0.2s ease;
+}
 .btn-danger:hover { background: rgba(217, 71, 53, 0.9); }
-.btn-success { background: rgba(39, 174, 96, 0.8); color: #fff; }
+.btn-success { 
+  background: rgba(39, 174, 96, 0.8); 
+  color: #fff; 
+  transition: background 0.2s ease;
+}
 .btn-success:hover { background: rgba(46, 204, 113, 0.9); }
 .btn-sm { padding: 5px 10px; font-size: 12px; }
 .card {
@@ -173,10 +202,13 @@ body {
   border-radius: 12px;
   padding: 20px;
   border-right: 4px solid #c6a961;
-  transition: all 0.3s;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
   box-shadow: 0 8px 32px rgba(0,0,0,0.2);
 }
-.stat-card:hover { transform: translateY(-3px); box-shadow: 0 12px 40px rgba(0,0,0,0.3); }
+.stat-card:hover { 
+  transform: translateY(-5px); 
+  box-shadow: 0 12px 40px rgba(0,0,0,0.3); 
+}
 .stat-label { font-size: 12px; color: #999; margin-bottom: 8px; }
 .stat-value { font-size: 24px; color: #fff; font-weight: bold; }
 .stat-sub { font-size: 11px; color: #777; margin-top: 6px; }
@@ -217,6 +249,7 @@ table {
   background: rgba(26, 31, 46, 0.4);
   border-radius: 10px;
   overflow: hidden;
+  will-change: scroll-position;
 }
 table th {
   background: rgba(36, 42, 61, 0.8);
@@ -232,7 +265,10 @@ table td {
   border-top: 1px solid rgba(198, 169, 97, 0.1);
   font-size: 13px;
 }
-table tr:hover { background: rgba(198, 169, 97, 0.05); }
+table tr:hover { 
+  background: rgba(198, 169, 97, 0.05); 
+  transition: background 0.15s ease;
+}
 .badge {
   display: inline-block;
   padding: 4px 12px;
@@ -272,6 +308,7 @@ table tr:hover { background: rgba(198, 169, 97, 0.05); }
   max-height: 90vh;
   overflow-y: auto;
   box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  contain: layout style;
 }
 .modal-header {
   display: flex;
@@ -2655,17 +2692,22 @@ async function clearAllData() {
 // پس‌زمینه متحرک
 function initBackground() {
   const canvas = document.getElementById('bgCanvas');
-  const ctx = canvas.getContext('2d');
+  const ctx = canvas.getContext('2d', { alpha: true });
   let width, height;
   const particles = [];
   const colors = ['#c6a961', '#e74c3c', '#3498db', '#2ecc71', '#9b59b6', '#f39c12'];
   
   function resize() {
-    width = canvas.width = window.innerWidth;
-    height = canvas.height = window.innerHeight;
+    width = canvas.width = window.innerWidth * Math.min(window.devicePixelRatio, 1.5);
+    height = canvas.height = window.innerHeight * Math.min(window.devicePixelRatio, 1.5);
+    canvas.style.width = window.innerWidth + 'px';
+    canvas.style.height = window.innerHeight + 'px';
   }
   resize();
-  window.addEventListener('resize', resize);
+  window.addEventListener('resize', () => {
+    clearTimeout(window.resizeTimer);
+    window.resizeTimer = setTimeout(resize, 250);
+  }, { passive: true });
   
   for (let i = 0; i < 35; i++) {
     particles.push({
@@ -2738,7 +2780,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     console.error('❌ خطا در بارگذاری:', err);
     showToast('خطا در بارگذاری برنامه', 'error');
   }
-});
+}, { once: true });
 </script>
 </body>
 </html>
