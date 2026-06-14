@@ -87,24 +87,66 @@ body {
 }
 .logo h1 { font-size: 16px; color: #c6a961; font-weight: bold; }
 .logo p { font-size: 11px; color: #888; margin-top: 4px; }
+.menu-toggle {
+  display: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  background: rgba(198, 169, 97, 0.1);
+  border: none;
+  color: #c6a961;
+  font-size: 18px;
+  width: 100%;
+  text-align: right;
+  border-bottom: 1px solid rgba(198, 169, 97, 0.2);
+  transition: background 0.2s ease;
+}
+.menu-toggle:hover { background: rgba(198, 169, 97, 0.2); }
+.menu-content {
+  transition: max-height 0.3s ease, opacity 0.3s ease;
+  max-height: 500px;
+  opacity: 1;
+  overflow: hidden;
+}
+.menu-content.collapsed {
+  max-height: 0;
+  opacity: 0;
+}
 .menu-item {
   padding: 13px 20px;
   cursor: pointer;
   color: #b0b0b0;
   border-right: 3px solid transparent;
-  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
   display: flex;
   align-items: center;
   gap: 10px;
   font-size: 13px;
 }
-.menu-item:hover { background: rgba(198, 169, 97, 0.1); color: #fff; }
+.menu-item:hover { 
+  background: rgba(198, 169, 97, 0.1); 
+  color: #fff;
+  transform: translateX(-5px);
+}
 .menu-item.active {
   background: linear-gradient(90deg, rgba(198,169,97,0.15), transparent);
   color: #c6a961;
   border-right-color: #c6a961;
 }
 .menu-icon { font-size: 16px; width: 22px; text-align: center; }
+.sidebar-footer {
+  padding: 15px 20px;
+  border-top: 1px solid rgba(198, 169, 97, 0.2);
+  margin-top: 20px;
+  text-align: center;
+}
+.version-text {
+  font-size: 11px;
+  color: #888;
+}
+.version-text span {
+  color: #c6a961;
+  font-weight: bold;
+}
 .main {
   margin-right: 260px;
   flex: 1;
@@ -112,9 +154,16 @@ body {
   width: calc(100% - 260px);
   min-height: 100vh;
 }
-.page { display: none; animation: fadeIn 0.3s; }
+.page { display: none; animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
 .page.active { display: block; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes slideInRight { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
+@keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+.stat-card { animation: slideInRight 0.5s ease-out; }
+.stat-card:nth-child(2) { animation-delay: 0.1s; }
+.stat-card:nth-child(3) { animation-delay: 0.2s; }
+.stat-card:nth-child(4) { animation-delay: 0.3s; }
 .page-header {
   display: flex;
   justify-content: space-between;
@@ -204,7 +253,12 @@ body {
   border-right: 4px solid #c6a961;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+  animation: slideInRight 0.5s ease-out backwards;
 }
+.stat-card:nth-of-type(1) { animation-delay: 0.1s; }
+.stat-card:nth-of-type(2) { animation-delay: 0.2s; }
+.stat-card:nth-of-type(3) { animation-delay: 0.3s; }
+.stat-card:nth-of-type(4) { animation-delay: 0.4s; }
 .stat-card:hover { 
   transform: translateY(-5px); 
   box-shadow: 0 12px 40px rgba(0,0,0,0.3); 
@@ -577,6 +631,19 @@ table tr:hover {
   .form-grid {
     grid-template-columns: 1fr;
   }
+  .menu-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .menu-toggle::after {
+    content: '▼';
+    font-size: 12px;
+    transition: transform 0.3s ease;
+  }
+  .menu-toggle.collapsed::after {
+    transform: rotate(-90deg);
+  }
 }
 </style>
 </head>
@@ -590,15 +657,24 @@ table tr:hover {
       <h1>سامانه حسابداری فروش</h1>
       <p>اکوسیستم کسب‌وکار همراه شماست</p>
     </div>
-    <div class="menu-item active" data-page="dashboard" onclick="showPage('dashboard')"><span class="menu-icon">🏠</span> داشبورد</div>
-    <div class="menu-item" data-page="parties" onclick="showPage('parties')"><span class="menu-icon">👥</span> اشخاص طرف حساب</div>
-    <div class="menu-item" data-page="newInvoice" onclick="showPage('newInvoice')"><span class="menu-icon">➕</span> صدور فاکتور</div>
-    <div class="menu-item" data-page="invoices" onclick="showPage('invoices')"><span class="menu-icon">📄</span> فاکتورهای فروش</div>
-    <div class="menu-item" data-page="purchases" onclick="showPage('purchases')"><span class="menu-icon">🛒</span> فاکتورهای خرید</div>
-    <div class="menu-item" data-page="expenses" onclick="showPage('expenses')"><span class="menu-icon">💰</span> اسناد هزینه</div>
-    <div class="menu-item" data-page="payments" onclick="showPage('payments')"><span class="menu-icon">💳</span> پرداخت‌ها و چک‌ها</div>
-    <div class="menu-item" data-page="reports" onclick="showPage('reports')"><span class="menu-icon">📈</span> گزارشات</div>
-    <div class="menu-item" data-page="settings" onclick="showPage('settings')"><span class="menu-icon">⚙️</span> تنظیمات</div>
+    <button class="menu-toggle" onclick="toggleMenu()">
+      <span>منو</span>
+      <span id="menuArrow">▼</span>
+    </button>
+    <div class="menu-content" id="menuContent">
+      <div class="menu-item active" data-page="dashboard" onclick="showPage('dashboard')"><span class="menu-icon">🏠</span> داشبورد</div>
+      <div class="menu-item" data-page="parties" onclick="showPage('parties')"><span class="menu-icon">👥</span> اشخاص طرف حساب</div>
+      <div class="menu-item" data-page="newInvoice" onclick="showPage('newInvoice')"><span class="menu-icon">➕</span> صدور فاکتور</div>
+      <div class="menu-item" data-page="invoices" onclick="showPage('invoices')"><span class="menu-icon">📄</span> فاکتورهای فروش</div>
+      <div class="menu-item" data-page="purchases" onclick="showPage('purchases')"><span class="menu-icon">🛒</span> فاکتورهای خرید</div>
+      <div class="menu-item" data-page="expenses" onclick="showPage('expenses')"><span class="menu-icon">💰</span> اسناد هزینه</div>
+      <div class="menu-item" data-page="payments" onclick="showPage('payments')"><span class="menu-icon">💳</span> پرداخت‌ها و چک‌ها</div>
+      <div class="menu-item" data-page="reports" onclick="showPage('reports')"><span class="menu-icon">📈</span> گزارشات</div>
+      <div class="menu-item" data-page="settings" onclick="showPage('settings')"><span class="menu-icon">⚙️</span> تنظیمات</div>
+    </div>
+    <div class="sidebar-footer">
+      <div class="version-text">نسخه <span id="appVersion">2.9.4</span></div>
+    </div>
   </aside>
 
   <main class="main">
@@ -1332,13 +1408,17 @@ const state = {
   editingPartyId: null,
   editingBankId: null,
   editingPurchaseId: null,
-  reportFilter: { fromDate: '', toDate: '', customerId: '' }
+  reportFilter: { fromDate: '', toDate: '', customerId: '' },
+  appVersion: '2.9.4'
 };
 
 // ناوبری
 function showPage(id) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
+  const pageEl = document.getElementById(id);
+  pageEl.classList.remove('active');
+  void pageEl.offsetWidth; // Trigger reflow for animation restart
+  pageEl.classList.add('active');
   document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
   const menu = document.querySelector(`.menu-item[data-page="${id}"]`);
   if (menu) menu.classList.add('active');
@@ -1352,6 +1432,14 @@ function showPage(id) {
   if (id === 'payments') renderPayments();
   if (id === 'reports') renderReports();
   if (id === 'settings') loadSettings();
+}
+
+// Toggle menu
+function toggleMenu() {
+  const menuContent = document.getElementById('menuContent');
+  const toggleBtn = document.querySelector('.menu-toggle');
+  menuContent.classList.toggle('collapsed');
+  toggleBtn.classList.toggle('collapsed');
 }
 
 // داشبورد
@@ -2777,10 +2865,13 @@ window.addEventListener('DOMContentLoaded', async () => {
     const s = await DB.get('settings', 'company');
     if (s) state.settings = {...state.settings, ...s};
     
+    // Set version number
+    document.getElementById('appVersion').textContent = state.appVersion;
+    
     initBackground();
     renderDashboard();
     setupAutoBackup();
-    console.log('✅ کارآونگ با موفقیت بارگذاری شد');
+    console.log(`✅ کارآونگ نسخه ${state.appVersion} با موفقیت بارگذاری شد`);
   } catch (err) {
     console.error('❌ خطا در بارگذاری:', err);
     showToast('خطا در بارگذاری برنامه', 'error');
