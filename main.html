@@ -700,11 +700,11 @@ table tr:hover {
           <div class="form-grid" style="margin-top:12px;gap:12px;">
             <div class="form-group" style="margin-bottom:0;">
               <label>تخفیف (درصد)</label>
-              <input type="text" id="invDiscountPercent" value="0" oninput="handleMoneyInput(this); calculateInvoiceTotals()">
+              <input type="text" id="invDiscountPercent" value="0" inputmode="numeric" dir="ltr" oninput="handleMoneyInput(this); calculateInvoiceTotals()">
             </div>
             <div class="form-group" style="margin-bottom:0;">
               <label>تخفیف (مبلغ)</label>
-              <input type="text" id="invDiscountAmount" value="0" oninput="handleMoneyInput(this); calculateInvoiceTotals()">
+              <input type="text" id="invDiscountAmount" value="0" inputmode="numeric" dir="ltr" oninput="handleMoneyInput(this); calculateInvoiceTotals()">
             </div>
             <div class="form-group" style="margin-bottom:0;">
               <label>ارزش افزوده (10%)</label>
@@ -936,11 +936,11 @@ table tr:hover {
       </div>
       <div class="form-group" id="commissionGroup" style="display:none;">
         <label>درصد پورسانت (%)</label>
-        <input type="text" id="partyCommission" oninput="handleMoneyInput(this)">
+        <input type="text" id="partyCommission" inputmode="numeric" dir="ltr" oninput="handleMoneyInput(this)">
       </div>
       <div class="form-group">
         <label>مانده حساب قبلی (تومان)</label>
-        <input type="text" id="partyBalance" oninput="handleMoneyInput(this)">
+        <input type="text" id="partyBalance" inputmode="numeric" dir="ltr" oninput="handleMoneyInput(this)">
       </div>
       <div class="form-group" style="grid-column:1/-1;">
         <label>آدرس</label>
@@ -982,7 +982,7 @@ table tr:hover {
     <div class="form-grid">
       <div class="form-group">
         <label>مبلغ (تومان) *</label>
-        <input type="text" id="payAmount" oninput="handleMoneyInput(this)">
+        <input type="text" id="payAmount" inputmode="numeric" dir="ltr" oninput="handleMoneyInput(this)">
       </div>
       <div class="form-group">
         <label>تاریخ</label>
@@ -1030,7 +1030,7 @@ table tr:hover {
       </div>
       <div class="form-group">
         <label>مبلغ (تومان) *</label>
-        <input type="text" id="chkAmount" oninput="handleMoneyInput(this)">
+        <input type="text" id="chkAmount" inputmode="numeric" dir="ltr" oninput="handleMoneyInput(this)">
       </div>
       <div class="form-group">
         <label>تاریخ سررسید</label>
@@ -1104,7 +1104,7 @@ table tr:hover {
     <div class="form-grid">
       <div class="form-group">
         <label>مبلغ (تومان) *</label>
-        <input type="text" id="purPayAmount" oninput="handleMoneyInput(this)">
+        <input type="text" id="purPayAmount" inputmode="numeric" dir="ltr" oninput="handleMoneyInput(this)">
       </div>
       <div class="form-group">
         <label>تاریخ</label>
@@ -1147,16 +1147,21 @@ function parseNumber(s) {
 function handleMoneyInput(el) {
   const startPos = el.selectionStart || 0;
   const oldLen = el.value.length;
-  let value = el.value.replace(/[^\d]/g, '');
+  let value = el.value.replace(/[^۰-۹\d]/g, '');
+  // Convert Persian numbers to English
+  value = value.replace(/[۰-۹]/g, d => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d));
   if (value) {
     const num = parseInt(value, 10);
-    el.value = num.toLocaleString('en-US');  // ← تغییر به en-US
+    el.value = num.toLocaleString('en-US');
   } else {
     el.value = '';
   }
   const newLen = el.value.length;
-  const diff = newLen - oldLen;
-  const newPos = startPos + diff;
+  // Calculate new cursor position considering commas
+  let newPos = startPos;
+  const commaCount = el.value.substring(0, startPos).split(',').length - 1;
+  newPos = startPos + commaCount;
+  if (newPos > el.value.length) newPos = el.value.length;
   setTimeout(() => {
     try { el.setSelectionRange(newPos, newPos); } catch(e) {}
   }, 0);
@@ -1643,8 +1648,8 @@ function renderInvoiceItems() {
         <td><input type="text" value="${it.name}" onchange="updateItem('${it.id}','name',this.value)" placeholder="نام کالا/خدمات"></td>
         <td><input type="text" value="${it.qty}" oninput="this.value=this.value.replace(/[^\\d]/g,'');updateItem('${it.id}','qty',this.value)"></td>
         <td><input type="text" value="${it.unit}" onchange="updateItem('${it.id}','unit',this.value)"></td>
-        <td><input type="text" value="${it.unitSale?it.unitSale.toLocaleString('en-US'):''}" oninput="handleMoneyInput(this);updateItem('${it.id}','unitSale',this.value)"></td>
-        <td><input type="text" value="${it.unitPurchase?it.unitPurchase.toLocaleString('en-US'):''}" oninput="handleMoneyInput(this);updateItem('${it.id}','unitPurchase',this.value)"></td>
+        <td><input type="text" value="${it.unitSale?it.unitSale.toLocaleString('en-US'):''}" inputmode="numeric" dir="ltr" oninput="handleMoneyInput(this);updateItem('${it.id}','unitSale',this.value)"></td>
+        <td><input type="text" value="${it.unitPurchase?it.unitPurchase.toLocaleString('en-US'):''}" inputmode="numeric" dir="ltr" oninput="handleMoneyInput(this);updateItem('${it.id}','unitPurchase',this.value)"></td>
         <td style="font-weight:bold;color:#c6a961;">${formatNumber(ts)}</td>
         <td style="text-align:center;"><button class="btn btn-sm btn-danger" onclick="removeInvoiceItem('${it.id}')">×</button></td>
       </tr>`;
@@ -1714,7 +1719,7 @@ function renderInvoicePayments() {
     state.currentInvoice.payments.forEach(p => {
       html += `<tr>
         <td><input type="text" value="${p.date}" onchange="updatePayment('${p.id}','date',this.value)"></td>
-        <td><input type="text" value="${p.amount?p.amount.toLocaleString('en-US'):''}" oninput="handleMoneyInput(this);updatePayment('${p.id}','amount',this.value)"></td>
+        <td><input type="text" value="${p.amount?p.amount.toLocaleString('en-US'):''}" inputmode="numeric" dir="ltr" oninput="handleMoneyInput(this);updatePayment('${p.id}','amount',this.value)"></td>
         <td><select onchange="updatePayment('${p.id}','method',this.value)">
           <option value="cash" ${p.method==='cash'?'selected':''}>نقدی</option>
           <option value="transfer" ${p.method==='transfer'?'selected':''}>انتقال وجه</option>
@@ -1736,7 +1741,7 @@ function renderInvoicePayments() {
       html += `<tr>
         <td><input type="text" value="${ch.number}" onchange="updateCheck('${ch.id}','number',this.value)"></td>
         <td><input type="text" value="${ch.bank}" onchange="updateCheck('${ch.id}','bank',this.value)"></td>
-        <td><input type="text" value="${ch.amount?ch.amount.toLocaleString('en-US'):''}" oninput="handleMoneyInput(this);updateCheck('${ch.id}','amount',this.value)"></td>
+        <td><input type="text" value="${ch.amount?ch.amount.toLocaleString('en-US'):''}" inputmode="numeric" dir="ltr" oninput="handleMoneyInput(this);updateCheck('${ch.id}','amount',this.value)"></td>
         <td><input type="text" value="${ch.dueDate||''}" onchange="updateCheck('${ch.id}','dueDate',this.value)" placeholder="1405/01/01"></td>
         <td><input type="text" value="${ch.holder||''}" onchange="updateCheck('${ch.id}','holder',this.value)"></td>
         <td><input type="text" value="${ch.desc||''}" onchange="updateCheck('${ch.id}','desc',this.value)"></td>
